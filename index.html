@@ -65,7 +65,11 @@ tw-link { color:#FF2F28; }
 
 
 
-</style><script role="script" id="twine-user-script" type="text/twine-javascript">
+
+</style><script role="script" id="twine-user-script" type="text/twine-javascript">// Harlowe Macro Framework, by Chapel; version 1.0.2
+;!function(){"use strict";var r={major:1,minor:0,patch:2},e=[r.major,r.minor,r.patch].join(".");r.semantic=e,r=Object.freeze(r);var t=$("tw-storydata"),a=Object.freeze({name:t.attr("name"),ifid:t.attr("ifid")}),n=t.attr("format-version"),o=n.split("."),i=Object.freeze({major:o[0],minor:o[1],patch:o[2],semantic:n});window.Harlowe=window.Harlowe||{},window.Harlowe=Object.assign(window.Harlowe,{framework:r,API_ACCESS:Object.freeze({MACROS:require("macros"),STATE:require("state"),CHANGER:require("datatypes/changercommand"),ENGINE:require("engine")}),engine:i,story:a})}(),function(){"use strict";function e(r){return"number"==typeof r||"boolean"==typeof r||"string"==typeof r||null===r||Array.isArray(r)&&r.every(e)||r instanceof Set&&Array.from(r).every(e)||r instanceof Map&&Array.from(r.values()).every(e)||_changer.isPrototypeOf(r)}window.Harlowe=Object.assign(window.Harlowe,{helpers:{isSerialisable:e,isSerializable:e,arrayify:function(r,e){if(r){var t=[].slice.call(r);return void 0!==e&&(t=t.slice(e)),t}},getPassageData:function(r){var e=$('tw-passagedata[name="'+r+'"]');if(e[0])return e}}})}(),function(){"use strict";var n=window.localStorage||!1,o=Harlowe.story.ifid+"-tw-storage";function r(){try{if(!n)throw new Error("storage is inaccessible");n.setItem(o,JSON.stringify({ifid:Harlowe.story.ifid}))}catch(r){console.warn(r)}}function i(r){try{var e;if(n)return e=JSON.parse(n.getItem(o)),r&&r&&"string"==typeof r?e[r]:e;throw new Error("storage is inaccessible")}catch(r){console.warn(r)}}null==i()&&r(),Harlowe.storage={clear:r,save:function(r,e){try{if(!r||"string"!=typeof r)throw new TypeError("cannot store values without a valid storage key");if(void 0===e)throw new TypeError("cannot store undefined values");var t={};if(t[r]=e,!n)throw new Error("storage is inaccessible");var a=i();Object.assign(a,t),n.setItem(o,JSON.stringify(a))}catch(r){console.warn(r)}},load:i,remove:function(r){try{if(!r||"string"!=typeof r)throw new TypeError("cannot store values without a valid storage key");if(!n)throw new Error("storage is inaccessible");var e=i();e.hasOwnProperty(r)&&(delete e[r],n.setItem(o,JSON.stringify(e)))}catch(r){console.warn(r)}}}}(),function(){"use strict";function a(r,e,t){if(!(this instanceof a))return new a(r,e,t);this.name=r||"unknown",this.args=e||[],this.data=t||{},this.type=t&&t.type||"basic",this.fn=t&&t.fn||"handler","changer"===this.type&&("handler"===this.fn?this.instance=t&&t.instance||null:this.descriptor=t&&t.descriptor||null)}a.create=function(r,e,t){if(!r||"string"!=typeof r||!r.trim())throw new TypeError("Invalid macro name.");return e&&e instanceof Array||(e=[]),t&&"object"==typeof t||(t={type:"basic",fn:"handler"}),new a(r,e,t)},Object.assign(a.prototype,{clone:function(){return a.create(this.name,this.args,this.data)},syntax:function(){return"("+this.name+":)"},error:function(r,e){var t="Error in the "+this.syntax()+" macro: "+r;return e&&alert(t),console.warn("HARLOWE CUSTOM MACRO ERROR -> ",t),new Error(r)},typeCheck:function(r){r&&r instanceof Array||(r=Harlowe.helpers.arrayify(arguments));var n=this,o=[];if(r.forEach(function(r,e){var t=e+1,a=[];"string"==typeof r&&("any"===(a=r.includes("|")?r.split("|").map(function(r){return r.trim().toLowerCase()}):[r.trim().toLowerCase()])[0]||a.some(function(r){return typeof n.args[e]===r})||o.push("argument "+t+" should be a(n) "+a.join(" or ")))}),o.length)return n.error(o.join("; "))}}),window.Harlowe=Object.assign(window.Harlowe,{MacroContext:a})}(),function(){"use strict";var c=Harlowe.API_ACCESS.MACROS,l=Harlowe.API_ACCESS.CHANGER;window.Harlowe=Object.assign(window.Harlowe||{},{macro:function(r,e,t){if(!r||"string"!=typeof r||!r.trim())throw new TypeError("Invalid macro name.");if(!e||"function"!=typeof e)throw new TypeError("Invalid macro handler.");var a,n,o,i,s;t&&"function"==typeof t?(o=r,i=e,s=t,c.addChanger(o,function(){var r=Harlowe.helpers.arrayify(arguments,1),e=l.create(o,r),t=Harlowe.MacroContext.create(o,r,{type:"changer",fn:"handler",instance:e});return i.apply(t,r),e},function(){var r=Harlowe.helpers.arrayify(arguments),e=r.shift(),t=Harlowe.MacroContext.create(o,r,{type:"changer",fn:"changer",descriptor:e});s.apply(t,r)},c.TypeSignature.zeroOrMore(c.TypeSignature.Any))):(a=r,n=e,c.add(a,function(){var r=Harlowe.helpers.arrayify(arguments,1),e=Harlowe.MacroContext.create(a,r,{type:"basic",fn:"handler"}),t=n.apply(e,r);return null==t?"":t},c.TypeSignature.zeroOrMore(c.TypeSignature.Any)))}})}(),function(){"use strict";var t=Harlowe.API_ACCESS.STATE,e=Harlowe.API_ACCESS.ENGINE;function a(){return t.passage}window.Harlowe=Object.assign(window.Harlowe||{},{passage:a,tags:function(r){r=r||a();try{var e=Harlowe.helpers.getPassageData(r).attr("tags");return e?e.split(" "):[]}catch(r){return console.warn(r.message),[]}},goto:function(r){return e.goToPassage(r)},variable:function(r,e){if("$"!==r[0])throw new Error('cannot access variable "'+r+'"');if(r=r.substr(1),void 0!==e){if(!Harlowe.helpers.isSerialisable(e))throw new Error('The value passed to variable "'+r+'" cannot be serialized.');t.variables[r]=e}return t.variables[r]},visited:function(r){return t.passageNameVisited(r||a())},hasVisited:function(r){return 0<t.passageNameVisited(r||a())},turns:function(){return t.pastLength}})}();
+// end Harlowe Macro Framework
+
 
 
 
@@ -149,7 +153,7 @@ You&#39;re listening to:
 [[Any other band]]
 
 
-</tw-passagedata><tw-passagedata pid="16" name="Walk it! C&#39;mon lazy bones" tags="" position="976,918" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="17" name="Tame Impala" tags="" position="751,1068" size="100,100">You know, I think we&#39;d be good friends if we ever met. But I doubt we will as you&#39;re probably going to die. 
+</tw-passagedata><tw-passagedata pid="16" name="Walk it! C&#39;mon lazy bones" tags="" position="976,918" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="17" name="Tame Impala" tags="" position="750,1068" size="100,100">You know, I think we&#39;d be good friends if we ever met. But I doubt we will as you&#39;re probably going to die. 
 
 </tw-passagedata><tw-passagedata pid="18" name="Any other band" tags="" position="1114,771" size="100,100">You turn it up, full volume. You get so wrapped up in (whatever you&#39;e listening to) and you forget to even check if there&#39;s any cars coming. No you&#39;re lucky this time. Just nearing Nicholson Street, the chorus kicks in. You imagine winning (an award for whatever you like to do in life) and forget yet again to check the road for oncoming, HOLY SHIT IT&#39;s A TRAM FUCK FUC-
 
@@ -190,7 +194,44 @@ You wonder if you should tell Riley that you have a crush on his housemate.(clic
 More importantly, how do you address the housemate?
 
 [[Play it cool, just say hey]]
-[[Wink when Riley isn&#39;t looking]]</tw-passagedata><tw-passagedata pid="25" name="Food, I&#39;m starving." tags="" position="352,1307" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="26" name="Play it cool, just say hey" tags="" position="127,1594" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="27" name="Wink when Riley isn&#39;t looking" tags="" position="277,1594" size="100,100"></tw-passagedata><tw-passagedata pid="28" name="NEWS FLASH" tags="" position="494,1426" size="100,100">(alert:&quot;You&#39;re a dumb cunt&quot;)</tw-passagedata></tw-storydata>
+[[Wink when Riley isn&#39;t looking]]</tw-passagedata><tw-passagedata pid="25" name="Food, I&#39;m starving." tags="" position="352,1307" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="26" name="Play it cool, just say hey" tags="" position="127,1594" size="100,100">Housemate says hey back. They seem okay with the hey. All is well. 
+
+Riley goes up tp grab his smokes and you head out the back and slump onto one of the raggedy couches. He comes out and asks, 
+
+&quot;What are we doing today?&quot;
+
+[[candle]]</tw-passagedata><tw-passagedata pid="27" name="Wink when Riley isn&#39;t looking" tags="" position="52,1403" size="100,100">You wink and the housemate looks into it. Phew!
+
+This house is one of those crippling-ly crumbly houses with deathly steep stairs and you wobble up them, following Riley to his room. He grabs his smokes. When you exit his room and go to head down the stairs, the housemate who is now looking scary as hell appears behind you and pushes you down the stairs. 
+
+You split your head open and die instantly. Okay, so housemate not into you, or is mad or something...
+
+Fuck.
+
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="28" name="NEWS FLASH" tags="" position="494,1426" size="100,100">(alert:&quot;You&#39;re a dumb cunt&quot;)</tw-passagedata><tw-passagedata pid="29" name="Let&#39;s hit Savers" tags="" position="434,1619" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="30" name="candle" tags="" position="609,1700" size="100,100">&lt;img src=&quot;candle.JPG&quot; usemap=&quot;#candle&quot;&gt;
+
+&lt;map name=&quot;candle&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;vegetables&quot; title=&quot;vegetables&quot; href=&quot;&quot; coords=&quot;1485,1908,1533,1926,1579,1926,1619,1937,1664,1953,1715,1953,1760,1943,1792,1932,1830,1924,1843,1881,1854,1948,1910,1945,1926,1985,1913,2004,1873,2025,1870,2068,1841,2084,1766,2106,1683,2106,1635,2108,1579,2108,1544,2108,1507,2097,1475,2065,1459,2031,1424,1993,1405,1977,1435,1951&quot; shape=&quot;poly&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;candle 1&quot; title=&quot;candle 1&quot; href=&quot;&quot; coords=&quot;863,2800,844,2838,833,2894,815,2907,815,2950,815,3001,815,3049,815,3102,815,3142,817,3196,841,3209,876,3209,879,3099,887,2982,887,2918&quot; shape=&quot;poly&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;candle 2&quot; title=&quot;candle 2&quot; href=&quot;&quot; coords=&quot;1178,2448,1165,2480,1159,2530,1167,2570,1151,2608,1151,2645,1151,2696,1151,2744,1151,2787,1151,2830,1151,2870,1151,2918,1151,2993,1154,3025,1181,3035,1205,3035,1221,3027,1229,2945,1223,2819,1223,2709,1223,2581&quot; shape=&quot;poly&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;candle 3&quot; title=&quot;candle 3&quot; href=&quot;&quot; coords=&quot;1499,2747,1493,2765,1483,2811,1483,2851,1488,2875,1485,2904,1485,2953,1485,2990,1491,3027,1491,3059,1491,3102,1507,3158,1539,3169,1568,3169,1547,2998,1536,2894,1515,2787,1520,2811&quot; shape=&quot;poly&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;pouch&quot; title=&quot;pouch&quot; href=&quot;&quot; coords=&quot;1953,3083,2089,3107,2289,3164,2279,3270,2273,3367,2158,3305,2022,3289,1934,3292&quot; shape=&quot;poly&quot;&gt;
+&lt;/map&gt;
+
+&lt;div style=&quot;display:none;&quot;&gt;
+[[vegetables]]
+[[candle 1]]
+[[candle 2]]
+[[candle 3]]
+[[pouch]]
+&lt;/div&gt;
+
+&lt;script&gt;
+$(&#39;area&#39;).on(&#39;click&#39;, function(e){
+e.preventDefault();
+Harlowe.goto(this.alt);
+});
+&lt;/script&gt; </tw-passagedata><tw-passagedata pid="31" name="vegetables" tags="" position="457,1850" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="32" name="candle 1" tags="" position="580,1925" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="33" name="candle 2" tags="" position="689,1928" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="34" name="candle 3" tags="" position="810,1902" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="35" name="pouch" tags="" position="904,1782" size="100,100">Double-click this passage to edit it.</tw-passagedata></tw-storydata>
 
 <script title="Twine engine code" data-main="harlowe">"use strict";function _defineProperty(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function _toConsumableArray(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}var _slicedToArray=function(){function e(e,t){var n=[],r=!0,i=!1,o=void 0;try{for(var a,s=e[Symbol.iterator]();!(r=(a=s.next()).done)&&(n.push(a.value),!t||n.length!==t);r=!0);}catch(e){i=!0,o=e}finally{try{!r&&s.return&&s.return()}finally{if(i)throw o}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};!function(){/**
  * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
