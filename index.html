@@ -84,6 +84,11 @@ img {
 
 
 
+
+
+
+
+
 </style><script role="script" id="twine-user-script" type="text/twine-javascript">(function (define) {
 !function(){"use strict";function r(){function e(){var r={width:u.width/u.naturalWidth,height:u.height/u.naturalHeight},a={width:parseInt(window.getComputedStyle(u,null).getPropertyValue("padding-left"),10),height:parseInt(window.getComputedStyle(u,null).getPropertyValue("padding-top"),10)};i.forEach(function(e,t){var n=0;o[t].coords=e.split(",").map(function(e){var t=1==(n=1-n)?"width":"height";return a[t]+Math.floor(Number(e)*r[t])}).join(",")})}function t(e){return e.coords.replace(/ *, */g,",").replace(/ +/g,",")}function n(){clearTimeout(d),d=setTimeout(e,250)}function r(e){return document.querySelector('img[usemap="'+e+'"]')}var a=this,o=null,i=null,u=null,d=null;"function"!=typeof a._resize?(o=a.getElementsByTagName("area"),i=Array.prototype.map.call(o,t),u=r("#"+a.name)||r(a.name),a._resize=e,u.addEventListener("load",e,!1),window.addEventListener("focus",e,!1),window.addEventListener("resize",n,!1),window.addEventListener("readystatechange",e,!1),document.addEventListener("fullscreenchange",e,!1),u.width===u.naturalWidth&&u.height===u.naturalHeight||e()):a._resize()}function e(){function t(e){e&&(!function(e){if(!e.tagName)throw new TypeError("Object is not a valid DOM element");if("MAP"!==e.tagName.toUpperCase())throw new TypeError("Expected <MAP> tag, found <"+e.tagName+">.")}(e),r.call(e),n.push(e))}var n;return function(e){switch(n=[],typeof e){case"undefined":case"string":Array.prototype.forEach.call(document.querySelectorAll(e||"map"),t);break;case"object":t(e);break;default:throw new TypeError("Unexpected data type ("+typeof e+").")}return n}}"function"==typeof define&&define.amd?define([],e):"object"==typeof module&&"object"==typeof module.exports?module.exports=e():window.imageMapResize=e(),"jQuery"in window&&(window.jQuery.fn.imageMapResize=function(){return this.filter("map").each(r).end()})}();
 }).call(window) ;
@@ -92,6 +97,11 @@ img {
 // Harlowe Macro Framework, by Chapel; version 1.0.2
 ;!function(){"use strict";var r={major:1,minor:0,patch:2},e=[r.major,r.minor,r.patch].join(".");r.semantic=e,r=Object.freeze(r);var t=$("tw-storydata"),a=Object.freeze({name:t.attr("name"),ifid:t.attr("ifid")}),n=t.attr("format-version"),o=n.split("."),i=Object.freeze({major:o[0],minor:o[1],patch:o[2],semantic:n});window.Harlowe=window.Harlowe||{},window.Harlowe=Object.assign(window.Harlowe,{framework:r,API_ACCESS:Object.freeze({MACROS:require("macros"),STATE:require("state"),CHANGER:require("datatypes/changercommand"),ENGINE:require("engine")}),engine:i,story:a})}(),function(){"use strict";function e(r){return"number"==typeof r||"boolean"==typeof r||"string"==typeof r||null===r||Array.isArray(r)&&r.every(e)||r instanceof Set&&Array.from(r).every(e)||r instanceof Map&&Array.from(r.values()).every(e)||_changer.isPrototypeOf(r)}window.Harlowe=Object.assign(window.Harlowe,{helpers:{isSerialisable:e,isSerializable:e,arrayify:function(r,e){if(r){var t=[].slice.call(r);return void 0!==e&&(t=t.slice(e)),t}},getPassageData:function(r){var e=$('tw-passagedata[name="'+r+'"]');if(e[0])return e}}})}(),function(){"use strict";var n=window.localStorage||!1,o=Harlowe.story.ifid+"-tw-storage";function r(){try{if(!n)throw new Error("storage is inaccessible");n.setItem(o,JSON.stringify({ifid:Harlowe.story.ifid}))}catch(r){console.warn(r)}}function i(r){try{var e;if(n)return e=JSON.parse(n.getItem(o)),r&&r&&"string"==typeof r?e[r]:e;throw new Error("storage is inaccessible")}catch(r){console.warn(r)}}null==i()&&r(),Harlowe.storage={clear:r,save:function(r,e){try{if(!r||"string"!=typeof r)throw new TypeError("cannot store values without a valid storage key");if(void 0===e)throw new TypeError("cannot store undefined values");var t={};if(t[r]=e,!n)throw new Error("storage is inaccessible");var a=i();Object.assign(a,t),n.setItem(o,JSON.stringify(a))}catch(r){console.warn(r)}},load:i,remove:function(r){try{if(!r||"string"!=typeof r)throw new TypeError("cannot store values without a valid storage key");if(!n)throw new Error("storage is inaccessible");var e=i();e.hasOwnProperty(r)&&(delete e[r],n.setItem(o,JSON.stringify(e)))}catch(r){console.warn(r)}}}}(),function(){"use strict";function a(r,e,t){if(!(this instanceof a))return new a(r,e,t);this.name=r||"unknown",this.args=e||[],this.data=t||{},this.type=t&&t.type||"basic",this.fn=t&&t.fn||"handler","changer"===this.type&&("handler"===this.fn?this.instance=t&&t.instance||null:this.descriptor=t&&t.descriptor||null)}a.create=function(r,e,t){if(!r||"string"!=typeof r||!r.trim())throw new TypeError("Invalid macro name.");return e&&e instanceof Array||(e=[]),t&&"object"==typeof t||(t={type:"basic",fn:"handler"}),new a(r,e,t)},Object.assign(a.prototype,{clone:function(){return a.create(this.name,this.args,this.data)},syntax:function(){return"("+this.name+":)"},error:function(r,e){var t="Error in the "+this.syntax()+" macro: "+r;return e&&alert(t),console.warn("HARLOWE CUSTOM MACRO ERROR -> ",t),new Error(r)},typeCheck:function(r){r&&r instanceof Array||(r=Harlowe.helpers.arrayify(arguments));var n=this,o=[];if(r.forEach(function(r,e){var t=e+1,a=[];"string"==typeof r&&("any"===(a=r.includes("|")?r.split("|").map(function(r){return r.trim().toLowerCase()}):[r.trim().toLowerCase()])[0]||a.some(function(r){return typeof n.args[e]===r})||o.push("argument "+t+" should be a(n) "+a.join(" or ")))}),o.length)return n.error(o.join("; "))}}),window.Harlowe=Object.assign(window.Harlowe,{MacroContext:a})}(),function(){"use strict";var c=Harlowe.API_ACCESS.MACROS,l=Harlowe.API_ACCESS.CHANGER;window.Harlowe=Object.assign(window.Harlowe||{},{macro:function(r,e,t){if(!r||"string"!=typeof r||!r.trim())throw new TypeError("Invalid macro name.");if(!e||"function"!=typeof e)throw new TypeError("Invalid macro handler.");var a,n,o,i,s;t&&"function"==typeof t?(o=r,i=e,s=t,c.addChanger(o,function(){var r=Harlowe.helpers.arrayify(arguments,1),e=l.create(o,r),t=Harlowe.MacroContext.create(o,r,{type:"changer",fn:"handler",instance:e});return i.apply(t,r),e},function(){var r=Harlowe.helpers.arrayify(arguments),e=r.shift(),t=Harlowe.MacroContext.create(o,r,{type:"changer",fn:"changer",descriptor:e});s.apply(t,r)},c.TypeSignature.zeroOrMore(c.TypeSignature.Any))):(a=r,n=e,c.add(a,function(){var r=Harlowe.helpers.arrayify(arguments,1),e=Harlowe.MacroContext.create(a,r,{type:"basic",fn:"handler"}),t=n.apply(e,r);return null==t?"":t},c.TypeSignature.zeroOrMore(c.TypeSignature.Any)))}})}(),function(){"use strict";var t=Harlowe.API_ACCESS.STATE,e=Harlowe.API_ACCESS.ENGINE;function a(){return t.passage}window.Harlowe=Object.assign(window.Harlowe||{},{passage:a,tags:function(r){r=r||a();try{var e=Harlowe.helpers.getPassageData(r).attr("tags");return e?e.split(" "):[]}catch(r){return console.warn(r.message),[]}},goto:function(r){return e.goToPassage(r)},variable:function(r,e){if("$"!==r[0])throw new Error('cannot access variable "'+r+'"');if(r=r.substr(1),void 0!==e){if(!Harlowe.helpers.isSerialisable(e))throw new Error('The value passed to variable "'+r+'" cannot be serialized.');t.variables[r]=e}return t.variables[r]},visited:function(r){return t.passageNameVisited(r||a())},hasVisited:function(r){return 0<t.passageNameVisited(r||a())},turns:function(){return t.pastLength}})}();
 // end Harlowe Macro Framework
+
+
+
+
+
 
 
 
@@ -123,25 +133,25 @@ img {
 &lt;img class=&quot;passage-image&quot; src=&quot;img/piss.jpg&quot; alt &quot;this is a picture of a loo&quot; /&gt;
 
 (text-style:&quot;shudder&quot;)[[Fuck! Okay. I&#39;ll get up.]] 
-(text-style:&quot;shudder&quot;)[[Go back to bed]] </tw-passagedata><tw-passagedata pid="3" name="Fuck! Okay. I&#39;ll get up." tags="okay" position="613,543" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/good job.jpg&quot; alt &quot;this is a picture of a bed&quot; /&gt;
+(text-style:&quot;shudder&quot;)[[Go back to bed]] </tw-passagedata><tw-passagedata pid="3" name="Fuck! Okay. I&#39;ll get up." tags="okay" position="689,539" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/good job.jpg&quot; alt &quot;this is a picture of a bed&quot; /&gt;
 
 
 (text-style:&quot;shudder&quot;)[[Nothing, gonna go buy some darts]]
 (text-style:&quot;shudder&quot;)[[I guess porridge and a mix of oat and full cream milk]]</tw-passagedata><tw-passagedata pid="4" name="WAKE UP" tags="awake" position="726,270" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/bed.jpg&quot; alt &quot;this is a picture of a bed&quot; /&gt;
 
 (text-style:&quot;shudder&quot;)[[Yes. Let me sleep longer.]]
-(text-style:&quot;shudder&quot;)[[Fuck! Okay. I&#39;ll get up.]]</tw-passagedata><tw-passagedata pid="5" name="Nothing, gonna go buy some darts" tags="dart" position="538,692" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/ashtray.jpg&quot; alt &quot;this is a picture of an ashtray&quot; /&gt;
+(text-style:&quot;shudder&quot;)[[Fuck! Okay. I&#39;ll get up.]]</tw-passagedata><tw-passagedata pid="5" name="Nothing, gonna go buy some darts" tags="dart" position="582,708" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/ashtray.jpg&quot; alt &quot;this is a picture of an ashtray&quot; /&gt;
 
 [[The Holiday Label (c) stripy green PJ Set + slides]]
-[[Dickies overalls (c) and a hoodie + slides]]</tw-passagedata><tw-passagedata pid="6" name="I guess porridge and a mix of oat and full cream milk" tags="" position="688,693" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/oatmilk.jpg&quot; alt &quot;this is a picture of oat milk&quot; /&gt;
+[[Dickies overalls (c) and a hoodie + slides]]</tw-passagedata><tw-passagedata pid="6" name="I guess porridge and a mix of oat and full cream milk" tags="" position="804,721" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/oatmilk.jpg&quot; alt &quot;this is a picture of oat milk&quot; /&gt;
 
 [[Go back to bed]]
-[[Go to the gym]]</tw-passagedata><tw-passagedata pid="7" name="The Holiday Label (c) stripy green PJ Set + slides" tags="" position="512,832" size="100,100"> &lt;img class=&quot;passage-image&quot; src=&quot;img/sweat1.jpg&quot; alt &quot;this is a picture of bottleshop graffiti&quot; /&gt; 
+[[Go to the gym]]</tw-passagedata><tw-passagedata pid="7" name="The Holiday Label (c) stripy green PJ Set + slides" tags="" position="607.6666666666666,823" size="100,100"> &lt;img class=&quot;passage-image&quot; src=&quot;img/sweat1.jpg&quot; alt &quot;this is a picture of bottleshop graffiti&quot; /&gt; 
 
 Left or right?
 
 [[Left, to Piedimontes]]
-[[Right, to the Bottle shop round the corner]]</tw-passagedata><tw-passagedata pid="8" name="Dickies overalls (c) and a hoodie + slides" tags="" position="660,895" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/STOP.jpg&quot; alt &quot;this is a picture of a stop sign&quot; /&gt;
+[[Right, to the Bottle shop round the corner]]</tw-passagedata><tw-passagedata pid="8" name="Dickies overalls (c) and a hoodie + slides" tags="" position="780,899" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/STOP.jpg&quot; alt &quot;this is a picture of a stop sign&quot; /&gt;
 [[Left, to Piedimontes]] 
 or
 [[Right, to the Bottle shop round the corner]] ?
@@ -155,35 +165,43 @@ Flash forward and it&#39;s 50 years in the future. You die in your sleep from to
 [[WAKE UP]] 
 
 
-</tw-passagedata><tw-passagedata pid="10" name="Go to the gym" tags="" position="901,768" size="100,100">Oo love it. Put on your little active wear outfit. Should you:
+</tw-passagedata><tw-passagedata pid="10" name="Go to the gym" tags="" position="1065,577" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/gym.jpg&quot; alt &quot;this is a picture of Canning Street&quot; /&gt;
 
 [[Tram it, save energy for gym]]
 [[Walk it! C&#39;mon lazy bones]]</tw-passagedata><tw-passagedata pid="11" name="Left, to Piedimontes" tags="" position="241,905" size="100,100">Yeah, Piedis has cheaper darts. As you&#39;re walking to Piedis you run into your friend Riley. They suggest you two should go on an adventure round town today. 
 
 [[Okay yeah, why not???]]
-[[Nah, pretty set on doing your own thing]]</tw-passagedata><tw-passagedata pid="12" name="Right, to the Bottle shop round the corner" tags="" position="483,996" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/bottle shop.jpg&quot; alt &quot;this is a picture of a vape&quot; /&gt;
+[[Nah, pretty set on doing your own thing]]</tw-passagedata><tw-passagedata pid="12" name="Right, to the Bottle shop round the corner" tags="" position="678,1050" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/bottle shop.jpg&quot; alt &quot;this is a picture of a vape&quot; /&gt;
 
 [[Buy a vape. Fuck it]]
 [[Buy tobacco. Vapes are for virgins]]</tw-passagedata><tw-passagedata pid="13" name="Buy a vape. Fuck it" tags="" position="309,697" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/noonebrunny.jpg&quot; alt &quot;this is a picture of an alleyway&quot; /&gt; 
 
 
 
-[[WAKE UP]] </tw-passagedata><tw-passagedata pid="14" name="Buy tobacco. Vapes are for virgins" tags="" position="613,1142" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="15" name="Tram it, save energy for gym" tags="" position="826,918" size="100,100">Fuck it! Okay, where are your airpods... oh yes here they are, next to your lube and collection of mundane poetry. 
-Outside is warm, the sky is clear and you&#39;re bouncing around, eager to go to the gym (lol). 
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="14" name="Buy tobacco. Vapes are for virgins" tags="" position="830,1156" size="100,100">Nice choice. As you leave the bottle-o you get a text from Riley. 
 
-You&#39;re listening to:
+MEET US IN CITY
+
+Hmmmm. Can you be fucked going into the city?
+
+[[Why not?]]
+[[Nah, fuck that]]</tw-passagedata><tw-passagedata pid="15" name="Tram it, save energy for gym" tags="" position="1052,770" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/stoppard.jpg&quot; alt &quot;this is a picture of airpods laying ontop of the play titled, &#39;Rosencrantz &amp; Guildenstern are Dead&#39; by Tom Stoppard.&quot; /&gt;
 
 [[Tame Impala]]
-[[Any other band]]
+[[Any other band]]</tw-passagedata><tw-passagedata pid="16" name="Walk it! C&#39;mon lazy bones" tags="" position="1305,834" size="100,100">Nice wow, I love how health conscious you are. It&#39;s hot. So you&#39;re walking to the gym, loving life, breathing in all the fresh air. Nothing can stop you now!!
+
+You enter the gym, swipe your card and jump on the treadmill for a wee warm up... do you
 
 
-</tw-passagedata><tw-passagedata pid="16" name="Walk it! C&#39;mon lazy bones" tags="" position="976,918" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="17" name="Tame Impala" tags="" position="750,1068" size="100,100">You know, I think we&#39;d be good friends if we ever met. But I doubt we will as you&#39;re probably going to die. 
+[[Run like the wind, cowboy!]] 
+[[Nice and easy baby, nice and eaaaasy]] </tw-passagedata><tw-passagedata pid="17" name="Tame Impala" tags="" position="1064,941" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/treadmill.jpg&quot; alt &quot;this is a picture of a pair of feet wearing cool joggers and cool socks&quot; /&gt;
 
-</tw-passagedata><tw-passagedata pid="18" name="Any other band" tags="" position="1114,771" size="100,100">You turn it up, full volume. You get so wrapped up in (whatever you&#39;e listening to) and you forget to even check if there&#39;s any cars coming. No you&#39;re lucky this time. Just nearing Nicholson Street, the chorus kicks in. You imagine winning (an award for whatever you like to do in life) and forget yet again to check the road for oncoming, HOLY SHIT IT&#39;s A TRAM FUCK FUC-
+[[Run like the wind, cowboy!]]
+[[Nice and easy baby, nice and eaaaasy]]</tw-passagedata><tw-passagedata pid="18" name="Any other band" tags="" position="1279,633" size="100,100">You turn it up, full volume. You get so wrapped up in (whatever you&#39;e listening to) and you forget to even check if there&#39;s any cars coming. No you&#39;re lucky this time. Just nearing Nicholson Street, the chorus kicks in. You imagine winning (an award for whatever you like to do in life) and forget yet again to check the road for oncoming, HOLY SHIT IT&#39;s A TRAM FUCK FUC-
 
-You get hit by a tram and die instantly. You know trams are like rhino&#39;s on skateboards. 
+You get hit by the tram and.....
 
-Try again. Must have been the (link: &quot;wrong&quot;)[(goto-url: &#39;https://occipital-cyber-cloud.glitch.me/&#39;)] music choice. 
+(link: &quot;CLICK HERE TO SEE IF YOU DIED&quot;)[(goto-url: &#39;https://error69.glitch.me/&#39;)]
 
 
 
@@ -191,7 +209,7 @@ Try again. Must have been the (link: &quot;wrong&quot;)[(goto-url: &#39;https://
 &lt;audio src=&quot;./audio/Trambell.mp3&quot; autoplay loop/&gt;</tw-passagedata><tw-passagedata pid="19" name="start" tags="start" position="534,113" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/died.jpg&quot; alt &quot;this is a picture of cooper&quot; /&gt;
 
 
-CLICK HERE &gt; &gt; &gt; [[☠️-&gt;NO TIME TO DIE]] </tw-passagedata><tw-passagedata pid="20" name="Untitled Passage" tags="" position="660,1343" size="100,100">Great, now you&#39;re at the Carlton Club. The giraffe is making eyes at you, which freaks you out so you go out into the smokers. </tw-passagedata><tw-passagedata pid="21" name="Nah, pretty set on doing your own thing" tags="" position="380,1132" size="100,100">Riley asks you again... They are pretty keen...
+CLICK HERE &gt; &gt; &gt; [[☠️-&gt;NO TIME TO DIE]] </tw-passagedata><tw-passagedata pid="20" name="CARLTON CLUB" tags="" position="343,1941" size="100,100">Great, now you&#39;re at the Carlton Club. The giraffe is making eyes at you, which freaks you out so you go out into the smokers. </tw-passagedata><tw-passagedata pid="21" name="Nah, pretty set on doing your own thing" tags="" position="614,1250.6666666666667" size="100,100">Riley asks you again... They are pretty keen...
 
 [[Nah, I&#39;m good thanks]]
 [[Okay yeah, why not???]] </tw-passagedata><tw-passagedata pid="22" name="Okay yeah, why not???" tags="" position="227,1093" size="100,100">Sick!!! 
@@ -203,7 +221,7 @@ They ask you,
 &quot;Should we get some food first or go back to mine and make a game plan?&quot;
 
 [[&quot;Game plan.&quot;]]
-[[Food, I&#39;m starving.]]</tw-passagedata><tw-passagedata pid="23" name="Nah, I&#39;m good thanks" tags="" position="494,1276" size="100,100">Okay.... Riley is devo but you gotta do you. You walk into Piedis and go up to the ciggie counter and wait. 
+[[Food, I&#39;m starving.]]</tw-passagedata><tw-passagedata pid="23" name="Nah, I&#39;m good thanks" tags="" position="885,1345" size="100,100">Okay.... Riley is devo but you gotta do you. You walk into Piedis and go up to the ciggie counter and wait. 
 
 Before you know it the axe murderer that attacked all those people in the Northcote 7/11 a while ago runs in and fucking chops your head off. Awwww man. 
 
@@ -211,45 +229,88 @@ You died.
 
 Try again. 
 
-[[NEWS FLASH]]</tw-passagedata><tw-passagedata pid="24" name="&quot;Game plan.&quot;" tags="" position="201,1271" size="100,100">You walk back to theirs. They live in Fitzroy North. Inside you run straight into his housemate.
+[[NEWS FLASH]]
+
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="24" name="&quot;Game plan.&quot;" tags="" position="201,1271" size="100,100">You walk back to theirs. They live in Fitzroy North. Inside you run straight into his housemate.
 
 You wonder if you should tell Riley that you have a crush on his housemate.(click-replace: &quot;have a crush on&quot;) [rooted].
 
 More importantly, how do you address the housemate?
 
 [[Play it cool, just say hey]]
-[[Wink when Riley isn&#39;t looking]]</tw-passagedata><tw-passagedata pid="25" name="Food, I&#39;m starving." tags="" position="352,1307" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="26" name="Play it cool, just say hey" tags="" position="127,1594" size="100,100">Housemate says hey back. They seem okay with the hey. All is well. 
+[[Wink when Riley isn&#39;t looking]]</tw-passagedata><tw-passagedata pid="25" name="Food, I&#39;m starving." tags="" position="447,1291" size="100,100"></tw-passagedata><tw-passagedata pid="26" name="Play it cool, just say hey" tags="" position="131,1410" size="100,100">Housemate says hey back. They seem okay with the hey. All is well. 
 
 Riley goes up tp grab his smokes and you head out the back and slump onto one of the raggedy couches. He comes out and asks, 
 
 &quot;What are we doing today?&quot;
 
-[[candle]]
+[[candle]
 [[die on purpose for practice]]
-</tw-passagedata><tw-passagedata pid="27" name="Wink when Riley isn&#39;t looking" tags="" position="52,1403" size="100,100">You wink and the housemate looks into it. Phew!
+</tw-passagedata><tw-passagedata pid="27" name="Wink when Riley isn&#39;t looking" tags="" position="9,1299" size="100,100">You wink and the housemate looks into it. Phew!
 
 This house is one of those crippling-ly crumbly houses with deathly steep stairs and you wobble up them, following Riley to his room. He grabs his smokes. When you exit his room and go to head down the stairs, the housemate who is now looking scary as hell appears behind you and pushes you down the stairs. 
 
-You split your head open and die instantly. Okay, so housemate not into you, or is mad or something...
 
-Fuck.
+(link: &quot;DID YOU DIE?&quot;)[(goto-url: &#39;https://purgatory666.glitch.me/&#39;)]
+</tw-passagedata><tw-passagedata pid="28" name="NEWS FLASH" tags="" position="808.3333333333334,1575.3333333333333" size="100,100">(alert:&quot;You&#39;re a dumb cunt&quot;)</tw-passagedata><tw-passagedata pid="29" name="pouch" tags="" position="1304,1844" size="100,100">You pick up the pouch and observe it. Hmm. OH NO! You feel a warm touch, a hand grabbing your wrist! Is it the ghost?????
 
-[[WAKE UP]] </tw-passagedata><tw-passagedata pid="28" name="NEWS FLASH" tags="" position="494,1426" size="100,100">(alert:&quot;You&#39;re a dumb cunt&quot;)</tw-passagedata><tw-passagedata pid="29" name="Let&#39;s hit Savers" tags="" position="434,1619" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="30" name="candle" tags="" position="608,1699" size="100,100">&lt;img src=&quot;./img/candle.jpg&quot; usemap=&quot;#candle&quot;&gt;
+&quot;HEY! That&#39;s mine!&quot;
 
-&lt;map name=&quot;candle&quot;&gt;
-    &lt;area target=&quot;&quot; alt=&quot;vegetables&quot; title=&quot;vegetables&quot; href=&quot;&quot; coords=&quot;1485,1908,1533,1926,1579,1926,1619,1937,1664,1953,1715,1953,1760,1943,1792,1932,1830,1924,1843,1881,1854,1948,1910,1945,1926,1985,1913,2004,1873,2025,1870,2068,1841,2084,1766,2106,1683,2106,1635,2108,1579,2108,1544,2108,1507,2097,1475,2065,1459,2031,1424,1993,1405,1977,1435,1951&quot; shape=&quot;poly&quot;&gt;
-    &lt;area target=&quot;&quot; alt=&quot;candle 1&quot; title=&quot;candle 1&quot; href=&quot;&quot; coords=&quot;863,2800,844,2838,833,2894,815,2907,815,2950,815,3001,815,3049,815,3102,815,3142,817,3196,841,3209,876,3209,879,3099,887,2982,887,2918&quot; shape=&quot;poly&quot;&gt;
-    &lt;area target=&quot;&quot; alt=&quot;candle 2&quot; title=&quot;candle 2&quot; href=&quot;&quot; coords=&quot;1178,2448,1165,2480,1159,2530,1167,2570,1151,2608,1151,2645,1151,2696,1151,2744,1151,2787,1151,2830,1151,2870,1151,2918,1151,2993,1154,3025,1181,3035,1205,3035,1221,3027,1229,2945,1223,2819,1223,2709,1223,2581&quot; shape=&quot;poly&quot;&gt;
-    &lt;area target=&quot;&quot; alt=&quot;candle 3&quot; title=&quot;candle 3&quot; href=&quot;&quot; coords=&quot;1499,2747,1493,2765,1483,2811,1483,2851,1488,2875,1485,2904,1485,2953,1485,2990,1491,3027,1491,3059,1491,3102,1507,3158,1539,3169,1568,3169,1547,2998,1536,2894,1515,2787,1520,2811&quot; shape=&quot;poly&quot;&gt;
-    &lt;area target=&quot;&quot; alt=&quot;pouch&quot; title=&quot;pouch&quot; href=&quot;&quot; coords=&quot;1953,3083,2089,3107,2289,3164,2279,3270,2273,3367,2158,3305,2022,3289,1934,3292&quot; shape=&quot;poly&quot;&gt;
+Oh. It&#39;s just your shitty roommate. They must have turned the lamp on and lit the candles. 
+
+&quot;Also, I have a date over would you mind giving us some space?&quot;
+
+It&#39;s all checking out. What do you say?
+
+[[Sure, no worries]]
+[[Umm, it&#39;s my house too bucko]]</tw-passagedata><tw-passagedata pid="30" name="die on purpose for practice" tags="" position="127,1744" size="100,100">&lt;p class=&quot;diving-board&quot;&gt;There is a diving board&lt;/p&gt;</tw-passagedata><tw-passagedata pid="31" name="Run like the wind, cowboy!" tags="" position="1111,1089" size="100,100">Yeeeehawww!!!
+
+You&#39;re running like there is no tomorrow, like there&#39;s nothing to lose, like you&#39;re going to die at any moment and you don&#39;t give a farrrrrk!
+
+That hot babe that you&#39;ve been eyeing walks in whilst you&#39;re running and you lock eyes but their ass distracts you so much that you slip on the treadmill, smash your head into the screen and the treadmill sends you flying into the wall behind you. 
+
+(link: &quot;Did you die?&quot;)[(goto-url: &#39;https://error666.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="32" name="Nice and easy baby, nice and eaaaasy" tags="" position="1210,1204" size="100,100">You&#39;re safe. I like that. 
+
+Finish your light jogging and then hit the floor with some weights. Up and down, really b u i l d your body.
+
+You finish with some stretching and then jump in the showers. Oh no! You dropped your little travel soap!
+
+Do you
+
+[[Pick it up!]]
+[[Oh dear god leave it gross]]</tw-passagedata><tw-passagedata pid="33" name="Pick it up!" tags="" position="1053,1209" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/soap.jpg&quot; alt &quot;this is a picture of a rusty shower rack with two bars of soap on it&quot; /&gt;
+
+[[WAKE UP]] 
+
+</tw-passagedata><tw-passagedata pid="34" name="Oh dear god leave it gross" tags="" position="1378,1364" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/selfie.jpg&quot; alt &quot;this is a selfie of a person in the gym putting the finger up&quot; /&gt;
+
+[[Back home for some study]]
+[[To the cafe round the corner for some lunch]]</tw-passagedata><tw-passagedata pid="35" name="Back home for some study" tags="" position="1231,1441" size="100,100">WOW. Who is this studious stud before me? I&#39;m proud. 
+
+Walk leisurely back to yours. Heat up some left overs for lunch and then do a few hours of study. Really get shit done. 
+
+Now, it&#39;s mid arvo, you should treat yourself!
+
+[[A nap]]
+[[Crack a coldie!]]
+</tw-passagedata><tw-passagedata pid="36" name="To the cafe round the corner for some lunch" tags="" position="1729,1534.6666666666667" size="100,100">Yes, yummmmo!! The cute barista winks at you while taking your order. What a day. 
+
+You order what you always do, an oat flat white and a tuna melt. Iconic, if I do say so myself. 
+
+Now I know you want to go out into the real world and play, but I think we now must head
+
+[[Back home for some study]] 😔</tw-passagedata><tw-passagedata pid="37" name="A nap" tags="" position="1150,1612" size="100,100">&lt;img src=&quot;./img/spooky1.jpg&quot; usemap=&quot;#spooky1&quot;&gt;
+
+&lt;map name=&quot;spooky1&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;middle candle&quot; title=&quot;middle candle&quot; href=&quot;&quot; coords=&quot;653,1548,662,1558,662,1572,662,1593,676,1597,676,1622,674,1645,674,1694,673,1786,659,1798,646,1793,645,1669,645,1604,646,1575,649,1561&quot; shape=&quot;poly&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;pouch&quot; title=&quot;pouch&quot; href=&quot;&quot; coords=&quot;981,1816,1004,1820,1039,1826,1067,1833,1099,1841,1120,1848,1112,1938,1065,1910,1040,1897,1021,1897,997,1897,972,1893,980,1862,980,1845&quot; shape=&quot;poly&quot;&gt;
+    &lt;area target=&quot;&quot; alt=&quot;lamp&quot; title=&quot;lamp&quot; href=&quot;&quot; coords=&quot;980,1162,967,1178,963,1200,960,1226,960,1234,967,1248,993,1255,1016,1255,1023,1268,1023,1297,1023,1338,1023,1369,984,1374,969,1380,976,1388,993,1392,1009,1395,1033,1395,1056,1395,1075,1394,1088,1390,1095,1381,1075,1376,1061,1374,1044,1374,1042,1350,1042,1311,1042,1268,1060,1262,1081,1254,1105,1251,1116,1231,1116,1214,1112,1179,1103,1160,1075,1150,1046,1147,1021,1147&quot; shape=&quot;poly&quot;&gt;
 &lt;/map&gt;
 
 &lt;div style=&quot;display:none;&quot;&gt;
-[[vegetables]]
-[[candle 1]]
-[[candle 2]]
-[[candle 3]]
+[[middle candle]]
 [[pouch]]
+[[lamp]] 
 &lt;/div&gt;
 &lt;script&gt;
 $(&#39;area&#39;).on(&#39;click&#39;, function(e){
@@ -257,7 +318,82 @@ e.preventDefault();
 Harlowe.goto(this.alt);
 });
 $(&#39;map&#39;).imageMapResize();
-&lt;/script&gt; </tw-passagedata><tw-passagedata pid="31" name="vegetables" tags="" position="457,1850" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="32" name="candle 1" tags="" position="580,1925" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="33" name="candle 2" tags="" position="689,1928" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="34" name="candle 3" tags="" position="810,1902" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="35" name="pouch" tags="" position="904,1782" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="36" name="die on purpose for practice" tags="" position="127,1744" size="100,100">&lt;p class=&quot;diving-board&quot;&gt;There is a diving board&lt;/p&gt;</tw-passagedata></tw-storydata>
+&lt;/script&gt; 
+</tw-passagedata><tw-passagedata pid="38" name="Crack a coldie!" tags="" position="1637,1682" size="100,100">Hell yeah!!! Smash the first one and then crack another. And then another. Okay, whoops now we are accidently drunk and alone. What to do what to do... Let&#39;s go see what our housemates are doing!
+
+You go into the kitchen and see it&#39;s all set up cute and fancy. But it&#39;s so quiet. Weird. You can&#39;t be home alone? Oh look an unattended tobacco pouch!
+
+[[Pick it up -&gt;pouch]] </tw-passagedata><tw-passagedata pid="39" name="middle candle" tags="" position="1174,1928" size="100,100">WOW! Touching the candle has taken you straight to Revs. That ghosty must have turned the candle into a portkey or something less lame than a Harry Potter reference. Anyhoo, it&#39;s somehow 3a.m and you&#39;re at Revs, what you gonna do?
+
+[[May as well…]] 
+[[LEAVE THIS HELL HOLE]] </tw-passagedata><tw-passagedata pid="40" name="lamp" tags="" position="1388,1692" size="100,100">(link: &quot;CLICK HERE TO SEE IF GHOSTY GOT YOU&quot;)[(goto-url: &#39;https://haunted69.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="41" name="Sure, no worries" tags="" position="1312,2110" size="100,100">You head back to your room and crawl into bed. Ahhhh. I&#39;d say it&#39;s time for Uber Eats!
+
+What should you get?
+
+[[Maccas]]
+[[Something healthy]]</tw-passagedata><tw-passagedata pid="42" name="Umm, it&#39;s my house too bucko" tags="" position="1550,1921" size="100,100">As you say this guess who appears!! It&#39;sssssssss ghosty!
+
+&quot;You&#39;re being a real cunt,&quot; ghosty says to you. 
+
+&quot;Oh yeah, what you gonna do about it?&quot;
+
+And just like that, ghosty sets you on fire with one of the candles and you melt into a shitty little waxxy puddle. Oh no. You died. 
+
+
+TITLE: DONT MESS W GHOSTY 
+
+Try again. 
+
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="43" name="Maccas" tags="" position="1237,2260" size="100,100">Yeah sick. You order a large cheeseburger meal with no meat patty, a hash brown, a large OJ, a large chocolate fudge sundae and extra ketchup. Trust me this is a common order and not niche to the creator of this game.
+
+You lay in bed waiting for this glorious meal. You hear a knock on the door... Already? How can that be?
+
+You open the door and OH NO it&#39;s ghosty!! 
+
+&quot;Gotcha cunt!&quot;
+
+Ghosty zaps you and you turn into a Happy Meal. Dang it! 
+
+Go back and try a different order????? Haha. </tw-passagedata><tw-passagedata pid="44" name="Something healthy" tags="" position="1522,2257" size="100,100">Typical. Has this been the most sensible, yet boring day of your entire life? Same. 
+
+You lay in bed waiting for this something healthy. It comes quickly and you gulf it down in one go. You look at the clock and see that it&#39;s 10p.m. Wow. May as well go to bed then. 
+
+You close your eyes and slowly drift away into another world, still alive in the Inner North of Melbourne, unscathed and content.....
+
+(link: &quot;CLICK HERE NOW&quot;)[(goto-url: &#39;https://winnerwinner.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="45" name="Why not?" tags="" position="583.3333333333333,1657.6666666666667" size="100,100">That&#39;s the spirit! You walk up to the tram stop and wait for the next one. Suddenly you&#39;re overcome with sleepiness. Oh god. You must have accidently taken two anti-depressants this morning. Now you&#39;re going to be deliriously happy, yet sleepy. Fuckkkkkk. 
+
+The tram pulls up and you walk on and pick a seat up the back in the sun. Ahh so cozy....so comfy...so quiet....
+
+[[Uh oh!]]</tw-passagedata><tw-passagedata pid="46" name="Nah, fuck that" tags="" position="1021.6666666666666,1445.0000000000002" size="100,100">Are you sure? Oh COME ON MATE, LIVE A LITTLE -
+
+[[FINE OKAY I&#39;ll GO -&gt;Why not?]] </tw-passagedata><tw-passagedata pid="47" name="Uh oh!" tags="" position="583.3333333333333,1807.6666666666667" size="100,100">You fall asleep on the 96 tram like the IDIOT you are. 
+
+You end up in St Kilda before you clear away the sleep in your eyes and realise you&#39;ve made a horrible mistake. Quickly click the stop button and get the fuck off!!
+
+You basically fall out of the tram, all groggy and immediately make eye contact with a lad. He looks angry. This is a nightmare. All that extra serotonin can&#39;t help you now!
+
+Do you,
+
+[[Look away, Jesus Christ, look away]]
+[[Chuck him the shakas, #yolo]]</tw-passagedata><tw-passagedata pid="48" name="Look away, Jesus Christ, look away" tags="" position="518.3333333333333,1951" size="100,100">You looking away did ya no favours. Lad took it as an insult. I won’t get into the nitty gritty but he stabbed you to death lol. You died. Try again 
+[[WAKE UP]]
+</tw-passagedata><tw-passagedata pid="49" name="Chuck him the shakas, #yolo" tags="" position="703.3333333333333,1957.6666666666667" size="100,100">The lad sees this as a sign of respect. He shakas back. This shakas sends you straight to the front of the line at Revs. How? I don&#39;t know. You look at your phone and it says the time is 3 a.m. What? Don&#39;t ask me how. You&#39;re brain is so fried this shit happens all the time. Remember?
+
+Anyways, should you just go home or go in…
+
+[[May as well…]]
+[[LEAVE THIS HELL HOLE]]
+</tw-passagedata><tw-passagedata pid="50" name="May as well…" tags="" position="628.3333333333333,2107.666666666667" size="100,100">Inside we go, up the scary stairs and oh, what is this? A small bag filled with a white powder catches your eye. You pick it up and dare to taste some...
+
+[[No, just leave it!]]
+[[Have a go hehe]]</tw-passagedata><tw-passagedata pid="51" name="LEAVE THIS HELL HOLE" tags="" position="778.3333333333333,2107.666666666667" size="100,100">Yeah let&#39;s fucking get OUTTA HERE!</tw-passagedata><tw-passagedata pid="52" name="No, just leave it!" tags="" position="553.3333333333333,2257.666666666667" size="100,100">Double-click this passage to edit it.</tw-passagedata><tw-passagedata pid="53" name="Have a go hehe" tags="" position="703.3333333333333,2257.666666666667" size="100,100">You get your keys out and have a bump. Mmm okay. No idea what that is, mayeb itssssssssssssssss -
+
+You have a heart attack on the stairs and fall to your timely death. Whoops. Moral of the story is kids:
+
+[[Don&#39;t do drugs]]
+[[Don&#39;t go to Revs]]</tw-passagedata><tw-passagedata pid="54" name="Don&#39;t do drugs" tags="" position="627.3333333333333,2407.666666666667" size="100,100">Hahaha. No, try again.</tw-passagedata><tw-passagedata pid="55" name="Don&#39;t go to Revs" tags="" position="778.3333333333333,2407.666666666667" size="100,100">Yes, exactly. Now go back and try again cunt!
+
+[[WAKE UP]] </tw-passagedata></tw-storydata>
 
 <script title="Twine engine code" data-main="harlowe">"use strict";function _defineProperty(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function _toConsumableArray(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}var _slicedToArray=function(){function e(e,t){var n=[],r=!0,i=!1,o=void 0;try{for(var a,s=e[Symbol.iterator]();!(r=(a=s.next()).done)&&(n.push(a.value),!t||n.length!==t);r=!0);}catch(e){i=!0,o=e}finally{try{!r&&s.return&&s.return()}finally{if(i)throw o}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};!function(){/**
  * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
