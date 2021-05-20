@@ -94,6 +94,7 @@ img {
 
 
 
+
 </style><script role="script" id="twine-user-script" type="text/twine-javascript">(function (define) {
 !function(){"use strict";function r(){function e(){var r={width:u.width/u.naturalWidth,height:u.height/u.naturalHeight},a={width:parseInt(window.getComputedStyle(u,null).getPropertyValue("padding-left"),10),height:parseInt(window.getComputedStyle(u,null).getPropertyValue("padding-top"),10)};i.forEach(function(e,t){var n=0;o[t].coords=e.split(",").map(function(e){var t=1==(n=1-n)?"width":"height";return a[t]+Math.floor(Number(e)*r[t])}).join(",")})}function t(e){return e.coords.replace(/ *, */g,",").replace(/ +/g,",")}function n(){clearTimeout(d),d=setTimeout(e,250)}function r(e){return document.querySelector('img[usemap="'+e+'"]')}var a=this,o=null,i=null,u=null,d=null;"function"!=typeof a._resize?(o=a.getElementsByTagName("area"),i=Array.prototype.map.call(o,t),u=r("#"+a.name)||r(a.name),a._resize=e,u.addEventListener("load",e,!1),window.addEventListener("focus",e,!1),window.addEventListener("resize",n,!1),window.addEventListener("readystatechange",e,!1),document.addEventListener("fullscreenchange",e,!1),u.width===u.naturalWidth&&u.height===u.naturalHeight||e()):a._resize()}function e(){function t(e){e&&(!function(e){if(!e.tagName)throw new TypeError("Object is not a valid DOM element");if("MAP"!==e.tagName.toUpperCase())throw new TypeError("Expected <MAP> tag, found <"+e.tagName+">.")}(e),r.call(e),n.push(e))}var n;return function(e){switch(n=[],typeof e){case"undefined":case"string":Array.prototype.forEach.call(document.querySelectorAll(e||"map"),t);break;case"object":t(e);break;default:throw new TypeError("Unexpected data type ("+typeof e+").")}return n}}"function"==typeof define&&define.amd?define([],e):"object"==typeof module&&"object"==typeof module.exports?module.exports=e():window.imageMapResize=e(),"jQuery"in window&&(window.jQuery.fn.imageMapResize=function(){return this.filter("map").each(r).end()})}();
 }).call(window) ;
@@ -102,6 +103,7 @@ img {
 // Harlowe Macro Framework, by Chapel; version 1.0.2
 ;!function(){"use strict";var r={major:1,minor:0,patch:2},e=[r.major,r.minor,r.patch].join(".");r.semantic=e,r=Object.freeze(r);var t=$("tw-storydata"),a=Object.freeze({name:t.attr("name"),ifid:t.attr("ifid")}),n=t.attr("format-version"),o=n.split("."),i=Object.freeze({major:o[0],minor:o[1],patch:o[2],semantic:n});window.Harlowe=window.Harlowe||{},window.Harlowe=Object.assign(window.Harlowe,{framework:r,API_ACCESS:Object.freeze({MACROS:require("macros"),STATE:require("state"),CHANGER:require("datatypes/changercommand"),ENGINE:require("engine")}),engine:i,story:a})}(),function(){"use strict";function e(r){return"number"==typeof r||"boolean"==typeof r||"string"==typeof r||null===r||Array.isArray(r)&&r.every(e)||r instanceof Set&&Array.from(r).every(e)||r instanceof Map&&Array.from(r.values()).every(e)||_changer.isPrototypeOf(r)}window.Harlowe=Object.assign(window.Harlowe,{helpers:{isSerialisable:e,isSerializable:e,arrayify:function(r,e){if(r){var t=[].slice.call(r);return void 0!==e&&(t=t.slice(e)),t}},getPassageData:function(r){var e=$('tw-passagedata[name="'+r+'"]');if(e[0])return e}}})}(),function(){"use strict";var n=window.localStorage||!1,o=Harlowe.story.ifid+"-tw-storage";function r(){try{if(!n)throw new Error("storage is inaccessible");n.setItem(o,JSON.stringify({ifid:Harlowe.story.ifid}))}catch(r){console.warn(r)}}function i(r){try{var e;if(n)return e=JSON.parse(n.getItem(o)),r&&r&&"string"==typeof r?e[r]:e;throw new Error("storage is inaccessible")}catch(r){console.warn(r)}}null==i()&&r(),Harlowe.storage={clear:r,save:function(r,e){try{if(!r||"string"!=typeof r)throw new TypeError("cannot store values without a valid storage key");if(void 0===e)throw new TypeError("cannot store undefined values");var t={};if(t[r]=e,!n)throw new Error("storage is inaccessible");var a=i();Object.assign(a,t),n.setItem(o,JSON.stringify(a))}catch(r){console.warn(r)}},load:i,remove:function(r){try{if(!r||"string"!=typeof r)throw new TypeError("cannot store values without a valid storage key");if(!n)throw new Error("storage is inaccessible");var e=i();e.hasOwnProperty(r)&&(delete e[r],n.setItem(o,JSON.stringify(e)))}catch(r){console.warn(r)}}}}(),function(){"use strict";function a(r,e,t){if(!(this instanceof a))return new a(r,e,t);this.name=r||"unknown",this.args=e||[],this.data=t||{},this.type=t&&t.type||"basic",this.fn=t&&t.fn||"handler","changer"===this.type&&("handler"===this.fn?this.instance=t&&t.instance||null:this.descriptor=t&&t.descriptor||null)}a.create=function(r,e,t){if(!r||"string"!=typeof r||!r.trim())throw new TypeError("Invalid macro name.");return e&&e instanceof Array||(e=[]),t&&"object"==typeof t||(t={type:"basic",fn:"handler"}),new a(r,e,t)},Object.assign(a.prototype,{clone:function(){return a.create(this.name,this.args,this.data)},syntax:function(){return"("+this.name+":)"},error:function(r,e){var t="Error in the "+this.syntax()+" macro: "+r;return e&&alert(t),console.warn("HARLOWE CUSTOM MACRO ERROR -> ",t),new Error(r)},typeCheck:function(r){r&&r instanceof Array||(r=Harlowe.helpers.arrayify(arguments));var n=this,o=[];if(r.forEach(function(r,e){var t=e+1,a=[];"string"==typeof r&&("any"===(a=r.includes("|")?r.split("|").map(function(r){return r.trim().toLowerCase()}):[r.trim().toLowerCase()])[0]||a.some(function(r){return typeof n.args[e]===r})||o.push("argument "+t+" should be a(n) "+a.join(" or ")))}),o.length)return n.error(o.join("; "))}}),window.Harlowe=Object.assign(window.Harlowe,{MacroContext:a})}(),function(){"use strict";var c=Harlowe.API_ACCESS.MACROS,l=Harlowe.API_ACCESS.CHANGER;window.Harlowe=Object.assign(window.Harlowe||{},{macro:function(r,e,t){if(!r||"string"!=typeof r||!r.trim())throw new TypeError("Invalid macro name.");if(!e||"function"!=typeof e)throw new TypeError("Invalid macro handler.");var a,n,o,i,s;t&&"function"==typeof t?(o=r,i=e,s=t,c.addChanger(o,function(){var r=Harlowe.helpers.arrayify(arguments,1),e=l.create(o,r),t=Harlowe.MacroContext.create(o,r,{type:"changer",fn:"handler",instance:e});return i.apply(t,r),e},function(){var r=Harlowe.helpers.arrayify(arguments),e=r.shift(),t=Harlowe.MacroContext.create(o,r,{type:"changer",fn:"changer",descriptor:e});s.apply(t,r)},c.TypeSignature.zeroOrMore(c.TypeSignature.Any))):(a=r,n=e,c.add(a,function(){var r=Harlowe.helpers.arrayify(arguments,1),e=Harlowe.MacroContext.create(a,r,{type:"basic",fn:"handler"}),t=n.apply(e,r);return null==t?"":t},c.TypeSignature.zeroOrMore(c.TypeSignature.Any)))}})}(),function(){"use strict";var t=Harlowe.API_ACCESS.STATE,e=Harlowe.API_ACCESS.ENGINE;function a(){return t.passage}window.Harlowe=Object.assign(window.Harlowe||{},{passage:a,tags:function(r){r=r||a();try{var e=Harlowe.helpers.getPassageData(r).attr("tags");return e?e.split(" "):[]}catch(r){return console.warn(r.message),[]}},goto:function(r){return e.goToPassage(r)},variable:function(r,e){if("$"!==r[0])throw new Error('cannot access variable "'+r+'"');if(r=r.substr(1),void 0!==e){if(!Harlowe.helpers.isSerialisable(e))throw new Error('The value passed to variable "'+r+'" cannot be serialized.');t.variables[r]=e}return t.variables[r]},visited:function(r){return t.passageNameVisited(r||a())},hasVisited:function(r){return 0<t.passageNameVisited(r||a())},turns:function(){return t.pastLength}})}();
 // end Harlowe Macro Framework
+
 
 
 
@@ -178,7 +180,7 @@ Flash forward and it&#39;s 50 years in the future. You die in your sleep from to
 [[Walk it! C&#39;mon lazy bones]]</tw-passagedata><tw-passagedata pid="11" name="Left, to Piedimontes" tags="" position="241,905" size="100,100">Yeah, Piedis has cheaper darts. As you&#39;re walking to Piedis you run into your friend Riley. They suggest you two should go on an adventure round town today. 
 
 [[Okay yeah, why not???]]
-[[Nah, pretty set on doing your own thing]]</tw-passagedata><tw-passagedata pid="12" name="Right, to the Bottle shop round the corner" tags="" position="678,1050" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/bottle shop.jpg&quot; alt &quot;this is a picture of a vape&quot; /&gt;
+[[Nah, pretty set on doing your own thing]]</tw-passagedata><tw-passagedata pid="12" name="Right, to the Bottle shop round the corner" tags="" position="678,1051" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/bottle shop.jpg&quot; alt &quot;this is a picture of a vape&quot; /&gt;
 
 [[Buy a vape. Fuck it]]
 [[Buy tobacco. Vapes are for virgins]]</tw-passagedata><tw-passagedata pid="13" name="Buy a vape. Fuck it" tags="" position="309,697" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/noonebrunny.jpg&quot; alt &quot;this is a picture of an alleyway&quot; /&gt; 
@@ -250,12 +252,12 @@ You head down Brunny street to your fave place (hint it&#39;s near The Provincia
 [[Pub crawl]]
 [[Op-shop!]]</tw-passagedata><tw-passagedata pid="25" name="Play it cool, just say hey" tags="" position="131,1410" size="100,100">Housemate says hey back. They seem okay with the hey. All is well. 
 
-Riley goes up tp grab his smokes and you head out the back and slump onto one of the raggedy couches. He comes out and asks, 
+Riley goes upstairs to grab his smokes and you head out the back and slump onto one of the raggedy couches. He comes out and asks, 
 
 &quot;What are we doing today?&quot;
 
-[[candle]
-[[die on purpose for practice]]
+[[Fitzroy Pool!]]
+[[Pub crawl]] 
 </tw-passagedata><tw-passagedata pid="26" name="Wink when Riley isn&#39;t looking" tags="" position="0,1292" size="100,100">You wink and the housemate looks into it. Phew!
 
 This house is one of those crippling-ly crumbly houses with deathly steep stairs and you wobble up them, following Riley to his room. He grabs his smokes. When you exit his room and go to head down the stairs, the housemate who is now looking scary as hell appears behind you and pushes you down the stairs. 
@@ -265,25 +267,25 @@ This house is one of those crippling-ly crumbly houses with deathly steep stairs
 </tw-passagedata><tw-passagedata pid="27" name="NEWS FLASH" tags="" position="916,1552" size="100,100">(alert:&quot;You&#39;re a dumb cunt&quot;)</tw-passagedata><tw-passagedata pid="28" name="pouch" tags="" position="1748,1979" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/flowers.jpg&quot; alt &quot;this is a picture of flowers and a tobacco pouch on a table.&quot; /&gt;
 
 [[Sure, no worries]]
-[[Umm, it&#39;s my house too bucko]]</tw-passagedata><tw-passagedata pid="29" name="die on purpose for practice" tags="" position="33,1567" size="100,100">&lt;p class=&quot;diving-board&quot;&gt;There is a diving board&lt;/p&gt;</tw-passagedata><tw-passagedata pid="30" name="Run like the wind, cowboy!" tags="" position="1403,1125" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/slip1.jpg&quot; alt &quot;this is a picture of treadmills in the reflection of a mirror&quot; /&gt;
+[[Umm, it&#39;s my house too bucko]]</tw-passagedata><tw-passagedata pid="29" name="Run like the wind, cowboy!" tags="" position="1403,1125" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/slip1.jpg&quot; alt &quot;this is a picture of treadmills in the reflection of a mirror&quot; /&gt;
 
-(link: &quot;Did you die?&quot;)[(goto-url: &#39;https://error666.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="31" name="Nice and easy baby, nice and eaaaasy" tags="" position="1210,1204" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/weights.jpg&quot; alt &quot;this is a picture of weights in a gym&quot; /&gt;
+(link: &quot;Did you die?&quot;)[(goto-url: &#39;https://error666.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="30" name="Nice and easy baby, nice and eaaaasy" tags="" position="1210,1204" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/weights.jpg&quot; alt &quot;this is a picture of weights in a gym&quot; /&gt;
 
 [[Pick it up!]]
-[[Oh dear god leave it gross]]</tw-passagedata><tw-passagedata pid="32" name="Pick it up!" tags="" position="1053,1209" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/soap.jpg&quot; alt &quot;this is a picture of a rusty shower rack with two bars of soap on it&quot; /&gt;
+[[Oh dear god leave it gross]]</tw-passagedata><tw-passagedata pid="31" name="Pick it up!" tags="" position="1053,1209" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/soap.jpg&quot; alt &quot;this is a picture of a rusty shower rack with two bars of soap on it&quot; /&gt;
 
 [[WAKE UP]] 
 
-</tw-passagedata><tw-passagedata pid="33" name="Oh dear god leave it gross" tags="" position="1388,1295" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/selfie.jpg&quot; alt &quot;this is a selfie of a person in the gym putting the finger up&quot; /&gt;
+</tw-passagedata><tw-passagedata pid="32" name="Oh dear god leave it gross" tags="" position="1388,1295" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/selfie.jpg&quot; alt &quot;this is a selfie of a person in the gym putting the finger up&quot; /&gt;
 
 [[Back home for some study]]
-[[To the cafe round the corner for some lunch]]</tw-passagedata><tw-passagedata pid="34" name="Back home for some study" tags="" position="1231,1441" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/slump.jpg&quot; alt &quot;this is a picture of a can of seltzer on a windowsill&quot; /&gt;
+[[To the cafe round the corner for some lunch]]</tw-passagedata><tw-passagedata pid="33" name="Back home for some study" tags="" position="1231,1441" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/slump.jpg&quot; alt &quot;this is a picture of a can of seltzer on a windowsill&quot; /&gt;
 
 [[A nap]]
 [[Crack a coldie!]]
-</tw-passagedata><tw-passagedata pid="35" name="To the cafe round the corner for some lunch" tags="" position="1729,1534" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/cawfee.jpg&quot; alt &quot;this is a picture of a coffee cup on a ledge&quot; /&gt;
+</tw-passagedata><tw-passagedata pid="34" name="To the cafe round the corner for some lunch" tags="" position="1729,1534" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/cawfee.jpg&quot; alt &quot;this is a picture of a coffee cup on a ledge&quot; /&gt;
 
-[[Back home for some study]] 😔</tw-passagedata><tw-passagedata pid="36" name="A nap" tags="" position="1482,1668" size="100,100">&lt;img src=&quot;./img/spooky1.jpg&quot; usemap=&quot;#spooky1&quot;&gt;
+[[Back home for some study]] 😔</tw-passagedata><tw-passagedata pid="35" name="A nap" tags="" position="1482,1668" size="100,100">&lt;img src=&quot;./img/spooky1.jpg&quot; usemap=&quot;#spooky1&quot;&gt;
 
 &lt;map name=&quot;spooky1&quot;&gt;
     &lt;area target=&quot;&quot; alt=&quot;middle candle&quot; title=&quot;middle candle&quot; href=&quot;&quot; coords=&quot;653,1548,662,1558,662,1572,662,1593,676,1597,676,1622,674,1645,674,1694,673,1786,659,1798,646,1793,645,1669,645,1604,646,1575,649,1561&quot; shape=&quot;poly&quot;&gt;
@@ -303,27 +305,27 @@ Harlowe.goto(this.alt);
 });
 $(&#39;map&#39;).imageMapResize();
 &lt;/script&gt; 
-</tw-passagedata><tw-passagedata pid="37" name="Crack a coldie!" tags="" position="1981,1818" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/fridge.jpg&quot; alt &quot;this is a picture of an open fridge with visable beers on a shelf&quot; /&gt;
+</tw-passagedata><tw-passagedata pid="36" name="Crack a coldie!" tags="" position="1981,1818" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/fridge.jpg&quot; alt &quot;this is a picture of an open fridge with visable beers on a shelf&quot; /&gt;
 
-[[Pick it up -&gt;pouch]] </tw-passagedata><tw-passagedata pid="38" name="middle candle" tags="" position="1418,1928" size="100,100">WOW! Touching the candle has taken you straight to Revs. That ghosty must have turned the candle into a portkey or something less lame than a Harry Potter reference. Anyhoo, it&#39;s somehow 3a.m and you&#39;re at Revs, what you gonna do?
+[[Pick it up -&gt;pouch]] </tw-passagedata><tw-passagedata pid="37" name="middle candle" tags="" position="1418,1928" size="100,100">WOW! Touching the candle has taken you straight to Revs. That ghosty must have turned the candle into a portkey or something less lame than a Harry Potter reference. Anyhoo, it&#39;s somehow 3a.m and you&#39;re at Revs, what you gonna do?
 
 [[May as well…]] 
-[[LEAVE THIS HELL HOLE]] </tw-passagedata><tw-passagedata pid="39" name="lamp" tags="" position="1688,1724" size="100,100">(link: &quot;CLICK HERE TO SEE IF GHOSTY GOT YOU&quot;)[(goto-url: &#39;https://haunted69.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="40" name="Sure, no worries" tags="" position="1576,2114" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/ubereats.jpg&quot; alt &quot;this is a picture of an uber eats paper bag on the floor of a bedroom.&quot; /&gt;
+[[LEAVE THIS HELL HOLE]] </tw-passagedata><tw-passagedata pid="38" name="lamp" tags="" position="1688,1724" size="100,100">(link: &quot;CLICK HERE TO SEE IF GHOSTY GOT YOU&quot;)[(goto-url: &#39;https://haunted69.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="39" name="Sure, no worries" tags="" position="1576,2114" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/ubereats.jpg&quot; alt &quot;this is a picture of an uber eats paper bag on the floor of a bedroom.&quot; /&gt;
 
 [[Maccas]]
-[[Something healthy]]</tw-passagedata><tw-passagedata pid="41" name="Umm, it&#39;s my house too bucko" tags="" position="1998,2089" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/ghost.jpg&quot; alt &quot;this is a picture of a backyard with fairy lights a blurry body walking towards the camera&quot; /&gt;
+[[Something healthy]]</tw-passagedata><tw-passagedata pid="40" name="Umm, it&#39;s my house too bucko" tags="" position="1998,2089" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/ghost.jpg&quot; alt &quot;this is a picture of a backyard with fairy lights a blurry body walking towards the camera&quot; /&gt;
 
-[[WAKE UP]] </tw-passagedata><tw-passagedata pid="42" name="Maccas" tags="" position="1651,2380" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/gotcha.jpg&quot; alt &quot;this is a picture of a door that slightly ajar.&quot; /&gt;
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="41" name="Maccas" tags="" position="1651,2380" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/gotcha.jpg&quot; alt &quot;this is a picture of a door that slightly ajar.&quot; /&gt;
 
-Go back and [[try a different order-&gt;Sure, no worries]]????? Haha. </tw-passagedata><tw-passagedata pid="43" name="Something healthy" tags="" position="1946,2434" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/alive.jpg&quot; alt &quot;this is a picture of a person in bed holding the rock n roll symbol up with their hand.&quot; /&gt;
+Go back and [[try a different order-&gt;Sure, no worries]]????? Haha. </tw-passagedata><tw-passagedata pid="42" name="Something healthy" tags="" position="1946,2434" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/alive.jpg&quot; alt &quot;this is a picture of a person in bed holding the rock n roll symbol up with their hand.&quot; /&gt;
 
-(link: &quot;CLICK HERE NOW&quot;)[(goto-url: &#39;https://winnerwinner.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="44" name="Why not?" tags="" position="1238,1684" size="100,100">That&#39;s the spirit! You walk up to the tram stop and wait for the next one. Suddenly you&#39;re overcome with sleepiness. Oh god. You must have accidently taken two anti-depressants this morning. Now you&#39;re going to be deliriously happy, yet sleepy. Fuckkkkkk. 
+(link: &quot;CLICK HERE NOW&quot;)[(goto-url: &#39;https://winnerwinner.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="43" name="Why not?" tags="" position="1238,1684" size="100,100">That&#39;s the spirit! You walk up to the tram stop and wait for the next one. Suddenly you&#39;re overcome with sleepiness. Oh god. You must have accidently taken two anti-depressants this morning. Now you&#39;re going to be deliriously happy, yet sleepy. Fuckkkkkk. 
 
 The tram pulls up and you walk on and pick a seat up the back in the sun. Ahh so cozy....so comfy...so quiet....
 
-[[Uh oh!]]</tw-passagedata><tw-passagedata pid="45" name="Nah, fuck that" tags="" position="1021,1445" size="100,100">Are you sure? Oh COME ON MATE, LIVE A LITTLE -
+[[Uh oh!]]</tw-passagedata><tw-passagedata pid="44" name="Nah, fuck that" tags="" position="1021,1445" size="100,100">Are you sure? Oh COME ON MATE, LIVE A LITTLE -
 
-[[FINE OKAY I&#39;ll GO -&gt;Why not?]] </tw-passagedata><tw-passagedata pid="46" name="Uh oh!" tags="" position="1080,1775" size="100,100">You fall asleep on the 96 tram like the IDIOT you are. 
+[[FINE OKAY I&#39;ll GO -&gt;Why not?]] </tw-passagedata><tw-passagedata pid="45" name="Uh oh!" tags="" position="1080,1775" size="100,100">You fall asleep on the 96 tram like the IDIOT you are. 
 
 You end up in St Kilda before you clear away the sleep in your eyes and realise you&#39;ve made a horrible mistake. Quickly click the stop button and get the fuck off!!
 
@@ -332,42 +334,38 @@ You basically fall out of the tram, all groggy and immediately make eye contact 
 Do you,
 
 [[Look away, Jesus Christ, look away]]
-[[Chuck him the shakas, #yolo]]</tw-passagedata><tw-passagedata pid="47" name="Look away, Jesus Christ, look away" tags="" position="1004,1951" size="100,100">You looking away did ya no favours. Lad took it as an insult. I won’t get into the nitty gritty but he stabbed you to death lol. You died. Try again 
+[[Chuck him the shakas, #yolo]]</tw-passagedata><tw-passagedata pid="46" name="Look away, Jesus Christ, look away" tags="" position="1004,1951" size="100,100">You looking away did ya no favours. Lad took it as an insult. I won’t get into the nitty gritty but he stabbed you to death lol. You died. Try again 
 [[WAKE UP]]
-</tw-passagedata><tw-passagedata pid="48" name="Chuck him the shakas, #yolo" tags="" position="1211,1853" size="100,100">The lad sees this as a sign of respect. He shakas back. This shakas sends you straight to the front of the line at Revs. How? I don&#39;t know. You look at your phone and it says the time is 3 a.m. What? Don&#39;t ask me how. You&#39;re brain is so fried this shit happens all the time. Remember?
+</tw-passagedata><tw-passagedata pid="47" name="Chuck him the shakas, #yolo" tags="" position="1211,1853" size="100,100">The lad sees this as a sign of respect. He shakas back. This shakas sends you straight to the front of the line at Revs. How? I don&#39;t know. You look at your phone and it says the time is 3 a.m. What? Don&#39;t ask me how. You&#39;re brain is so fried this shit happens all the time. Remember?
 
 Anyways, should you just go home or go in…
 
 [[May as well…]]
 [[LEAVE THIS HELL HOLE]]
-</tw-passagedata><tw-passagedata pid="49" name="May as well…" tags="" position="1036,2103" size="100,100">Inside we go, up the scary stairs and oh, what is this? A small bag filled with a white powder catches your eye. You pick it up and dare to taste some...
+</tw-passagedata><tw-passagedata pid="48" name="May as well…" tags="" position="1036,2103" size="100,100">Inside we go, up the scary stairs and oh, what is this? A small bag filled with a white powder catches your eye. You pick it up and dare to taste some...
 
 [[No, just leave it!]]
-[[Have a go hehe]]</tw-passagedata><tw-passagedata pid="50" name="LEAVE THIS HELL HOLE" tags="" position="1258,2131" size="100,100">Yeah let&#39;s fucking get OUTTA HERE!</tw-passagedata><tw-passagedata pid="51" name="No, just leave it!" tags="" position="989,2365" size="100,100">Seriously, are you trying to die? C&#39;mon. Now walk up the stairs and go to the bar. Order a French Martini. No, order a Gin and Tonic. No. Order a pint of beer. Scan the room. Why are you here? What is the meaning of this? Who are you?
+[[Have a go hehe]]</tw-passagedata><tw-passagedata pid="49" name="LEAVE THIS HELL HOLE" tags="" position="1258,2131" size="100,100">Yeah let&#39;s fucking get OUTTA HERE!</tw-passagedata><tw-passagedata pid="50" name="No, just leave it!" tags="" position="989,2365" size="100,100">Seriously, are you trying to die? C&#39;mon. Now walk up the stairs and go to the bar. Order a French Martini. No, order a Gin and Tonic. No. Order a pint of beer. Scan the room. Why are you here? What is the meaning of this? Who are you?
 
 Oh, out of the corner of your eye you spy your friend Riley! They come over and you and say they are about to go to a house party in Footscray. Ugh Footscray!!
 
 Do you 
 [[Go, may as well]]
-[[No way, go home]]</tw-passagedata><tw-passagedata pid="52" name="Have a go hehe" tags="" position="1295,2417" size="100,100">You get your keys out and have a bump. Mmm okay. No idea what that is, mayeb itssssssssssssssss -
+[[No way, go home]]</tw-passagedata><tw-passagedata pid="51" name="Have a go hehe" tags="" position="1295,2417" size="100,100">You get your keys out and have a bump. Mmm okay. No idea what that is, mayeb itssssssssssssssss -
 
 You have a heart attack on the stairs and fall to your timely death. Whoops. Moral of the story is kids:
 
 [[Don&#39;t do drugs]]
-[[Don&#39;t go to Revs]]</tw-passagedata><tw-passagedata pid="53" name="Don&#39;t do drugs" tags="" position="1147,2503" size="100,100">Hahaha. No, try again.</tw-passagedata><tw-passagedata pid="54" name="Don&#39;t go to Revs" tags="" position="1494,2631" size="100,100">Yes, exactly. Now go back and try again cunt!
+[[Don&#39;t go to Revs]]</tw-passagedata><tw-passagedata pid="52" name="Don&#39;t do drugs" tags="" position="1147,2503" size="100,100">Hahaha. No, try again.</tw-passagedata><tw-passagedata pid="53" name="Don&#39;t go to Revs" tags="" position="1494,2631" size="100,100">Yes, exactly. Now go back and try again cunt!
 
-[[WAKE UP]] </tw-passagedata><tw-passagedata pid="55" name="Go, may as well" tags="" position="845,2796" size="100,100">You leave with Riley and some of their new found friends and jump on the next tram to the city and then a train out to &#39;scray. About an hour passes and you&#39;ve had a swig on everyones flask and a few sneaky vapes. You feel great. 
-
-The party is popping off when you arrive, there&#39;s snacks everywhere, heaps of booze, drugs flailing about, but there&#39;s one thing that really catches your eye. It&#39;s a double layered bowl of jelly. Green on top and red on the bottom with a freddo frog sitting suspended in the middle. You want the frog. You want it badly. 
-
-Do you 
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="54" name="Go, may as well" tags="" position="845,2796" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/jelly.jpg&quot; alt &quot;this is a picture of a group of people at a house party&quot; /&gt;
 
 [[Sneakily spoon it out]]
-[[Leave it you freak]]</tw-passagedata><tw-passagedata pid="56" name="No way, go home" tags="" position="1018,2699" size="100,100">Good idea!! You finish your drink with Riley, say your goodbyes and then head. As you&#39;re leaving you think you can smell the faint smell of horse shit. Before you realise, a horse and carriage runs you over, smearing blood and horse shit everywhere. Who wants a horse and carriage ride at 3 in the morning??? Why on earth do they operate at this time??
+[[Leave it you freak]]</tw-passagedata><tw-passagedata pid="55" name="No way, go home" tags="" position="1018,2699" size="100,100">Good idea!! You finish your drink with Riley, say your goodbyes and then head. As you&#39;re leaving you think you can smell the faint smell of horse shit. Before you realise, a horse and carriage runs you over, smearing blood and horse shit everywhere. Who wants a horse and carriage ride at 3 in the morning??? Why on earth do they operate at this time??
 
 God works in mysterious ways. 
 
-Oh yeah, you&#39;re dead. Go back and [[try again-&gt;Go, may as well]] </tw-passagedata><tw-passagedata pid="57" name="Sneakily spoon it out" tags="" position="994,3111" size="100,100">You edge your way over to the bowl. There&#39;s so many people around you, but no one is paying particular attention to you. Very skillfully, you scoop two fingers into the jelly and pick out the freddo frog. 
+Oh yeah, you&#39;re dead. Go back and [[try again-&gt;Go, may as well]] </tw-passagedata><tw-passagedata pid="56" name="Sneakily spoon it out" tags="" position="994,3111" size="100,100">You edge your way over to the bowl. There&#39;s so many people around you, but no one is paying particular attention to you. Very skillfully, you scoop two fingers into the jelly and pick out the freddo frog. 
 
 You stand back to assess the damage. It&#39;s honestly not too bad. You quickly walk away and shove the freddo into your mouth. It&#39;s cold and hard, but worth it. So worth it. 
 
@@ -375,11 +373,11 @@ About an hour later you start to feel not so good. Rather shabby, infact. You fi
 
 &quot;Aw no, that freddo was laced for the bday boy.&quot;
 
-Before you know it you&#39;re (link: &quot;tripping&quot;)[(goto-url: &#39;https://heavensent69.glitch.me/&#39;)]. Yeah, you&#39;re in heaven. It&#39;s you&#39;re choice whether you come back down or not. But if you do, go back in time and DON&#39;T eat the freddo. </tw-passagedata><tw-passagedata pid="58" name="Leave it you freak" tags="" position="1094,2955" size="100,100">Yeah that is probably the smartest choice you&#39;ve ever made. I&#39;m proud of you. Speaking of smart ideas, Riley finds you and suggests that you trek it down to Williamstown beach for sunrise. Hmmmm should you?
+Before you know it you&#39;re (link: &quot;tripping&quot;)[(goto-url: &#39;https://heavensent69.glitch.me/&#39;)]. Yeah, you&#39;re in heaven. It&#39;s you&#39;re choice whether you come back down or not. But if you do, go back in time and DON&#39;T eat the freddo. </tw-passagedata><tw-passagedata pid="57" name="Leave it you freak" tags="" position="1094,2955" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/sunrise.jpg&quot; alt &quot;this is a picture of water shining in the sun&quot; /&gt;
 
 [[YESS]]
 [[Nah, I&#39;m callin it. Goin home.]]
-</tw-passagedata><tw-passagedata pid="59" name="YESS" tags="" position="1327,3241" size="100,100">The two of you walk to the train station and jump on the next train to Williamstown. It take half an hour, but Riley knicked a bottle of Jamo so you&#39;re sweet. As the train pulls up the sun begin to come up to. So does Riley, those two caps took their time. 
+</tw-passagedata><tw-passagedata pid="58" name="YESS" tags="" position="1327,3241" size="100,100">The two of you walk to the train station and jump on the next train to Williamstown. It take half an hour, but Riley knicked a bottle of Jamo so you&#39;re sweet. As the train pulls up the sun begin to come up to. So does Riley, those two caps took their time. 
 
 You both walk to the edge of the wharf, breathing in the fresh air. You stand on the edge and look down into the dark water. Riley taps your shoulder and you swing around too quickly. You fall into the water. 
 
@@ -389,60 +387,58 @@ You and Riley are laughin hysterically. What a funny accident. But before you kn
 
 You died. Go back and try again.
 
-[[WAKE UP]]</tw-passagedata><tw-passagedata pid="60" name="Nah, I&#39;m callin it. Goin home." tags="" position="1159,3232" size="100,100">Fair. So fucking fair. Aight, order that Uber and let&#39;s get outta the West!! Say goodbye to Riley and tell them to not die (please) and get in your Uber. It&#39;s a sticky 20 or so minutes trying not to vomit, but you somehow manage it. You get out of the car, right out the front of your place and do a massive spew. Hell yeah!
+[[WAKE UP]]</tw-passagedata><tw-passagedata pid="59" name="Nah, I&#39;m callin it. Goin home." tags="" position="1159,3232" size="100,100">Fair. So fucking fair. Aight, order that Uber and let&#39;s get outta the West!! Say goodbye to Riley and tell them to not die (please) and get in your Uber. It&#39;s a sticky 20 or so minutes trying not to vomit, but you somehow manage it. You get out of the car, right out the front of your place and do a massive spew. Hell yeah!
 
 Inside you pull off your clothes and crawl into bed, your brain rattling around inside your head. 
 
-I don&#39;t belive it but.... I think you might have gotten through the day without (link: &quot;dying...&quot;)[(goto-url: &#39;https://winnerwinner.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="61" name="Pub crawl" tags="" position="486,1484" size="100,100">YEEEEEEEEHAWWWWWWW. Firstly, you two go back to Fitzroy North and hit up The Parkview for some $7 pints. Have a slap on the pokies. Okay now you&#39;re ready to hit the town. 
+I don&#39;t belive it but.... I think you might have gotten through the day without (link: &quot;dying...&quot;)[(goto-url: &#39;https://winnerwinner.glitch.me/&#39;)]</tw-passagedata><tw-passagedata pid="60" name="Pub crawl" tags="" position="486,1484" size="100,100">YEEEEEEEEHAWWWWWWW. Firstly, you two go back to Fitzroy North and hit up The Parkview for some $7 pints. Have a slap on the pokies. Okay now you&#39;re ready to hit the town. 
 
 [[Go east]]
-[[Go south]]</tw-passagedata><tw-passagedata pid="62" name="Op-shop!" tags="" position="737,1535" size="100,100">WOOOOOOO! Cross over to Brunny via the bus. I know, buses are gross but it&#39;s how we get to Brunny okay! Hit up savers and steal some strange ornaments, then got to GOODBYES and try on clothes that nor you or Riley can afford. Ce la vie. 
+[[Go south]]</tw-passagedata><tw-passagedata pid="61" name="Op-shop!" tags="" position="737,1535" size="100,100">WOOOOOOO! Cross over to Brunny via the bus. I know, buses are gross but it&#39;s how we get to Brunny okay! Hit up savers and steal some strange ornaments, then got to GOODBYES and try on clothes that nor you or Riley can afford. Ce la vie. 
 
 You both are now bored. 
 
 &quot;Pub?&quot;
 
-Now it&#39;s time for a [[beer-&gt;Pub crawl]]. </tw-passagedata><tw-passagedata pid="63" name="Go east" tags="" position="407,1636" size="100,100">Yes! Okay sick. You head to Collingwobbles and stop by the Marquis of Lorne. You smell their potato cakes cooking and salvia dribbles out of your mouth. Do you dare?
+Now it&#39;s time for a [[beer-&gt;Pub crawl]]. </tw-passagedata><tw-passagedata pid="62" name="Go east" tags="" position="407,1636" size="100,100">Yes! Okay sick. You head to Collingwobbles and stop by the Marquis of Lorne. You smell their potato cakes cooking and salvia dribbles out of your mouth. Do you dare?
 
 [[Order some]]
-[[Save your money!]]</tw-passagedata><tw-passagedata pid="64" name="Go south" tags="" position="622,1656" size="100,100">Head into the city and go to Heartbreaker. Nothing like a $5 slice of pizza and a G&amp;T with a giant ice cube in it. You smash the pizza and drink and get the hell out and walk down towards the Yarra, passing tourists, suits and just the general crazy people you find in the deeeeeeeep city. Lol. 
+[[Save your money!]]</tw-passagedata><tw-passagedata pid="63" name="Go south" tags="" position="623,1656" size="100,100">Head into the city and go to Heartbreaker. Nothing like a $5 slice of pizza and a G&amp;T with a giant ice cube in it. You smash the pizza and drink and get the hell out and walk down towards the Yarra, passing tourists, suits and just the general crazy people you find in the deeeeeeeep city. Lol. 
 
 Now you hit the edge. To Riverland on the left, or Arbory Afloat on the right?
 
 [[Riverland!]]
 [[Afloat!]]
-</tw-passagedata><tw-passagedata pid="65" name="Order some" tags="" position="285,1903" size="100,100">Correct. Now have a pint on the balcony under the colourful lights and split some potato cakes with your mate Riley. Could today get any better? No. Finish up and leave, heading to Smith Street. Walk past Vintage Garage and be pulled in by the lights, the leather and the animal print. You had to enter you had no choice. 
+</tw-passagedata><tw-passagedata pid="64" name="Order some" tags="" position="285,1903" size="100,100">Correct. Now have a pint on the balcony under the colourful lights and split some potato cakes with your mate Riley. Could today get any better? No. Finish up and leave, heading to Smith Street. Walk past Vintage Garage and be pulled in by the lights, the leather and the animal print. You had to enter you had no choice. 
 
 You try on a faux fur jacket and some plastic Elton John sunnies. You then try on a faux leather jacket and some speed dealer sunnies. What outfit do you spend your rent money on?
 
 [[Fur + Elton John]]
 [[Leather + Speed]]
 
-</tw-passagedata><tw-passagedata pid="66" name="Save your money!" tags="" position="609,1925" size="100,100">WRONG. You died of idiocy. You always buy potato cakes from Marquis of Lorne! Go👏back👏and👏try👏again.</tw-passagedata><tw-passagedata pid="67" name="Fur + Elton John" tags="" position="334,2124" size="100,100">Fur and Elton John Sunnies. Damn. I think now it&#39;s time for us to hit Rainbow. 
+</tw-passagedata><tw-passagedata pid="65" name="Save your money!" tags="" position="609,1925" size="100,100">WRONG. You died of idiocy. You always buy potato cakes from Marquis of Lorne! Go👏back👏and👏try👏again.</tw-passagedata><tw-passagedata pid="66" name="Fur + Elton John" tags="" position="334,2124" size="100,100">Fur and Elton John Sunnies. Damn. I think now it&#39;s time for us to hit Rainbow. 
 
 As you and Riley enter you become over stimulated by colourful Queers everywhere.  Priscilla Queen of the desert is playing on the screen in the background. Have you died and gone to heaven? Not yet. 
 
 Shots are a go and then you and Riley have a boogy. The smell of love is in the air. So is the smell of amyl. You sniff it out and a dancing queen offers it to you. Do you dare?
 
 [[Yes!]]
-[[Nah, be chill]]</tw-passagedata><tw-passagedata pid="68" name="Leather + Speed" tags="" position="574,2171" size="100,100">This is an outfit for Sircuit. You cut the line and get let in straight away because of your fire outfit. Riley orders two vodka redbulls and you skull them as you walk to the D-floor. As you make your way past the strangely positioned pool tables a drag queen is taken aback by your incredible outfit. Unfortunately she&#39;s holding a pool stick and it slams right into your chest, staking you like th faux vampire you are. 
+[[Nah, be chill]]</tw-passagedata><tw-passagedata pid="67" name="Leather + Speed" tags="" position="574,2171" size="100,100">This is an outfit for Sircuit. You cut the line and get let in straight away because of your fire outfit. Riley orders two vodka redbulls and you skull them as you walk to the D-floor. As you make your way past the strangely positioned pool tables a drag queen is taken aback by your incredible outfit. Unfortunately she&#39;s holding a pool stick and it slams right into your chest, staking you like th faux vampire you are. 
 
 Ouch. 
 
-You died. Try [[again-&gt;WAKE UP]].</tw-passagedata><tw-passagedata pid="69" name="Yes!" tags="" position="259,2274" size="100,100">BAM! You are instantly transported into a dark nightclub. A taxidermy giraffe looms over you as suits surround you. Is this hell? No, it&#39;s just the Carlton Club. You push past the suits and find Riley at the bar ordering jagerbombs.
-
-&quot;Come on!&quot;
+You died. Try [[again-&gt;WAKE UP]].</tw-passagedata><tw-passagedata pid="68" name="Yes!" tags="" position="259,2274" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/jager1.jpg&quot; alt &quot;this is a picture of a person at the Carlton Club&quot; /&gt;
 
 [[Escape and go home while you still can]]
-[[Go on!]]</tw-passagedata><tw-passagedata pid="70" name="Nah, be chill" tags="" position="409,2274" size="100,100">You wave away the silly fumes and dance your heart out, without a headache. Riley and you are sweating so much now it&#39;s like you&#39;re standing under a waterfall. Ew. You both go out the front for a smoke and a cool down. Just as you light up a yellow taxi comes bowling through the parklet and runs you down. Yikes. 
+[[Go on!]]</tw-passagedata><tw-passagedata pid="69" name="Nah, be chill" tags="" position="409,2274" size="100,100">You wave away the silly fumes and dance your heart out, without a headache. Riley and you are sweating so much now it&#39;s like you&#39;re standing under a waterfall. Ew. You both go out the front for a smoke and a cool down. Just as you light up a yellow taxi comes bowling through the parklet and runs you down. Yikes. 
 
-You died. Try [[again-&gt;WAKE UP]].</tw-passagedata><tw-passagedata pid="71" name="Escape and go home while you still can" tags="" position="313,2436" size="100,100">You tell Riley you have to go home. They are sad but understand. You walk down the staircase trying to avoid the crowd coming up stream. You pick up the pace rounding a corner and a suit shoves you, hard. You fall down the staircase at 10000000 miles an hour and crack your head open on the ground floor. At least no more suits can harass you. 
+You died. Try [[again-&gt;WAKE UP]].</tw-passagedata><tw-passagedata pid="70" name="Escape and go home while you still can" tags="" position="313,2436" size="100,100">You tell Riley you have to go home. They are sad but understand. You walk down the staircase trying to avoid the crowd coming up stream. You pick up the pace rounding a corner and a suit shoves you, hard. You fall down the staircase at 10000000 miles an hour and crack your head open on the ground floor. At least no more suits can harass you. 
 
-You died. Go back and [[try again-&gt;Yes!]].</tw-passagedata><tw-passagedata pid="72" name="Go on!" tags="" position="536,2439" size="100,100">You both slam down your drinks and begin to laugh hysterically. FUN FUN FUN FUN FUN FUN! You both wobble onto the dance floor and bust out some moves to FISHER and KYLIE MINOGUE and DUA LIPA. ALl of a sudden the floor begins to rock. To shake. You look behind you and see the giraffe has somehow come back to life. You and the giraffe lock eyes and you know this is the end. Its neck swings around and its head collides with your body, sending you into the DJ decks. The equipment begins to sizzle and the set up cooks you and the DJ. RIP.
+You died. Go back and [[try again-&gt;Yes!]].</tw-passagedata><tw-passagedata pid="71" name="Go on!" tags="" position="536,2439" size="100,100">You both slam down your drinks and begin to laugh hysterically. FUN FUN FUN FUN FUN FUN! You both wobble onto the dance floor and bust out some moves to FISHER and KYLIE MINOGUE and DUA LIPA. ALl of a sudden the floor begins to rock. To shake. You look behind you and see the giraffe has somehow come back to life. You and the giraffe lock eyes and you know this is the end. Its neck swings around and its head collides with your body, sending you into the DJ decks. The equipment begins to sizzle and the set up cooks you and the DJ. RIP.
 
 You died. Go back and try again.
 
-[[WAKE UP]] </tw-passagedata><tw-passagedata pid="73" name="Riverland!" tags="" position="849,1878" size="100,100">You and Riley each buy a schooner of cider for $12 a pop and sit by the water. You see the boys out on the water rowing. It&#39;s a stunningly ~iconic~ Melbourne arvo. You finish your drinks and share a ciggy on the edge of the walk-way, nothing seperating you from the water besides a tiny wood block, the height of your ankle.
+[[WAKE UP]] </tw-passagedata><tw-passagedata pid="72" name="Riverland!" tags="" position="849,1878" size="100,100">You and Riley each buy a schooner of cider for $12 a pop and sit by the water. You see the boys out on the water rowing. It&#39;s a stunningly ~iconic~ Melbourne arvo. You finish your drinks and share a ciggy on the edge of the walk-way, nothing seperating you from the water besides a tiny wood block, the height of your ankle.
 
 Riley makes you laugh and you accidently drop your lighter into the water. You reach over the get it, but as your reaching one of those tourist-y river cruises nudges into you and you fall underneath the boat. You try to swim out from under it but the water&#39;s filled with those bikes you used to be able to rent around Melb (they were rumoured to have all been thrown into the Yarra). You can&#39;t get around them in time and you drown amongst the forgotten o-Bikes.
 
@@ -450,13 +446,36 @@ A dark death that one. Sorry bout that. You died.
 
 Go back and [[try again-&gt;WAKE UP]].
 
-</tw-passagedata><tw-passagedata pid="74" name="Afloat!" tags="" position="790,1710" size="100,100">Mmmm. You each buy a $20 Aperol Spritz and and sit on the edge, both of your legs dangling above the water. You both sigh from happiness, the sun now setting over the water. Life couldn&#39;t be more perfect. 
+</tw-passagedata><tw-passagedata pid="73" name="Afloat!" tags="" position="790,1710" size="100,100">Mmmm. You each buy a $20 Aperol Spritz and and sit on the edge, both of your legs dangling above the water. You both sigh from happiness, the sun now setting over the water. Life couldn&#39;t be more perfect. 
 
 As you take your final sip of spritz, a fucking mermaid jumps out of the water and snatches the glass off you. You&#39;re pissed, so you dive in after them, wrestling over the glass. You lock eyes and instantly fall in love. Love at first sight. They take you back to their underwater cave and magically give you gills. You live together in harmony, have kids and become grandparents. 50 years later you die from old age surrounded by your mer-family. 
 
 You died. Go back and try again.
 
-[[WAKE UP]]</tw-passagedata></tw-storydata>
+[[WAKE UP]]</tw-passagedata><tw-passagedata pid="74" name="Fitzroy Pool!" tags="" position="153,1560" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/worm.jpg&quot; alt &quot;this is a picture of the golden worm found in Eddy Gardens, in Fitzroy North /&gt; 
+
+[[Hell yeah]]
+[[Hell nah]]</tw-passagedata><tw-passagedata pid="75" name="Hell yeah" tags="" position="78,1710" size="100,100">&lt;img class=&quot;passage-image&quot; src=&quot;img/pool.jpg&quot; alt &quot;this is a picture of Fitzroy Pool. /&gt; 
+
+[[Nah, just dive in normally]]
+[[Aight]]</tw-passagedata><tw-passagedata pid="76" name="Hell nah" tags="" position="268,1667" size="100,100">Well, well, well. Fun fact about the Alexandra Parade is that the pedestrian lights RARELY go green. They are the slowest lights in the entire fucking world. So if you wait you&#39;ll die of boredom, or from the extreme weather conditions that change every hour or you will inevitbly get hit by one of the loonies driving pass. 
+
+If I were you love, I&#39;d go back and [[try again-&gt;Fitzroy Pool!]] 
+
+Or you have set yourself up to die lol.</tw-passagedata><tw-passagedata pid="77" name="Nah, just dive in normally" tags="" position="3,1861" size="100,100">A much better idea. You and Riley swim a few laps, enjoying the gentle exercise. You then get out to sun bake (and to enjoy the pretty people around you). After an hour or so Riley suggests you go on that pub crawl now. 
+
+What do you say?
+
+[[I need more sun]]
+[[Sure, let&#39;s do it-&gt;Pub crawl]] </tw-passagedata><tw-passagedata pid="78" name="Aight" tags="" position="153,1860" size="100,100">You have a sneaky run up to the blocks and fling yourself into the air. You fly so far that you smack your head into the flags. They wrap around your neck and as you fall into the water you, well you um... You really hang yourself out to dry so to speak. 
+
+You died. [[Try again-&gt;WAKE UP]] </tw-passagedata><tw-passagedata pid="79" name="I need more sun" tags="" position="159,2153" size="100,100">Riley sighs but doesn&#39;t try to convince you anymore. They leave because the sun becomes too much for them. You&#39;re left to yourself to fry. 
+
+Unfortunately you begin to literally fry like an egg. You stand up and smoke begins to seep out of your pores. Before you know it, you&#39;ve literally caught on fire. 
+
+You run into the water and collapse into sand. 
+
+Damn tough break. You died. [[Try again-&gt;WAKE UP]] </tw-passagedata></tw-storydata>
 
 <script title="Twine engine code" data-main="harlowe">"use strict";function _defineProperty(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function _toConsumableArray(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}var _slicedToArray=function(){function e(e,t){var n=[],r=!0,i=!1,o=void 0;try{for(var a,s=e[Symbol.iterator]();!(r=(a=s.next()).done)&&(n.push(a.value),!t||n.length!==t);r=!0);}catch(e){i=!0,o=e}finally{try{!r&&s.return&&s.return()}finally{if(i)throw o}}return n}return function(t,n){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,n);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};!function(){/**
  * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
